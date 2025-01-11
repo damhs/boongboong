@@ -2,12 +2,17 @@ import React, { useRef, useState } from "react";
 import styles from "./RecentHistory.module.css";
 import RecentHistoryItem from "./RecentHistoryItem";
 import PathItem from "./PathItem";
+import config from "../../config";
 
-const RecentHistory = ({ recentPath, recentHistory, onPathDelete, onItemDelete }) => {
+const baseurl = config.backendUrl;
+
+const RecentHistory = ({ onPathDelete, onItemDelete }) => {
   const scrollRef = useRef(null);
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
+    const [recentPath, setRecentPath] = useState([]);
+    const [recentHistory, setRecentHistory] = useState([]);
   
     const handleMouseDown = (e) => {
       setIsDragging(true);
@@ -25,6 +30,7 @@ const RecentHistory = ({ recentPath, recentHistory, onPathDelete, onItemDelete }
     const handleMouseUp = () => {
       setIsDragging(false);
     };
+
 
   return (
     <div className={styles.container}>

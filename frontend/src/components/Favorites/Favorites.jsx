@@ -1,14 +1,19 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
 import styles from "./Favorites.module.css";
 import FavoriteItem from "./FavoriteItem";
 import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg";
+import config from "../../config";
+
+const baseurl = config.backendUrl;
 
 
-const Favorites = ({ favorites, onPlaceClick }) => {
+const Favorites = ({ userID, onPlaceClick }) => {
   const scrollRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+  const [favorites, setFavorites] = useState([]);
 
   const handleMouseDown = (e) => {
     setIsDragging(true);
@@ -26,6 +31,23 @@ const Favorites = ({ favorites, onPlaceClick }) => {
   const handleMouseUp = () => {
     setIsDragging(false);
   };
+
+  // API 호출
+  const callFavorites = async () => {
+    try {
+      const res = await axios.get(`${baseurl}/favorites/${userID}`);
+      setFavorites(res.data); // API에서 받은 데이터를 state에 저장
+    } catch (error) {
+      console.error("Failed to fetch favorites:", error);
+    }
+  };
+
+  // 컴포넌트가 처음 렌더링될 때 또는 userID가 변경될 때 데이터 가져오기
+  useEffect(() => {
+    if (userID) {
+      callFavorites();
+    }
+  }, [userID]);
 
   return(
     <div className={styles.container}>
