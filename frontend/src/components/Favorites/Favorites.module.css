@@ -1,0 +1,45 @@
+/* Favorites.module.css */
+.container {
+    margin-bottom: 4vh;
+  }
+  
+  .label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px; /* 라벨 크기 */
+    font-weight: bold; /* 라벨 강조 */
+    color: var(--black);
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    margin-left: 3vw;
+    margin-right: 3vw;
+    margin-bottom: 2vh;
+    border-bottom: 1px solid #ccc; /* 구분선 추가 */
+    padding-bottom: 1vh; /* 구분선과 간격 */
+  }
+
+  .editButton {
+    border: none;
+    background: none;
+    font-size: 1.8vh;
+    cursor: pointer;
+    color: var(--dark-green);
+  }
+  
+  .scrollContainer {
+    display: flex;
+    overflow-x: scroll; /* 가로 스크롤 활성화 */
+    margin: 3vw;
+    gap: 10px;
+  }
+  .scrollContainer::-webkit-scrollbar {
+    display: none; /* Chrome, Safari: 스크롤바 숨김 */
+  }
+  .scrollContainer:active {
+    cursor: grabbing; /* 활성 상태에서 커서 변경 */
+  }
+  .scrollContainer {
+    scroll-snap-type: x mandatory; /* 스크롤 스냅 설정 */
+  }
+
+  

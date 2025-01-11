@@ -1,0 +1,66 @@
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 20px;
+    border: 2px solid var(--light-green);
+    border-radius: 12px;
+    padding: 12px;
+    min-width: 130px;
+    width: 130px;
+    position: relative;
+  }
+  
+  .cardContent {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 8px;
+  }
+  
+  .cardItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 5px;
+  }
+  
+  .bulletStart {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--main-green);
+  }
+  .bulletEnd {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--dark-green);
+  }
+  .dots {
+    padding: 0;
+    margin-left: 7px;
+    margin-top: -6px;
+    margin-bottom: -6px;
+  }
+  
+  .text {
+    font-size: 14px;
+    color: var(--black);
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    overflow: hidden; /* 넘치는 텍스트 숨기기 */
+    text-overflow: ellipsis; /* 말줄임표(...) 적용 */
+  }
+  
+  .deleteButton {
+    position: absolute;
+    top: 6px;
+    right: 4px;
+    background: none;
+    border: none;
+    color: var(--gray);
+    font-size: 14px;
+    cursor: pointer;
+  }
+  

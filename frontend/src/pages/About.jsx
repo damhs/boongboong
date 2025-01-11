@@ -1,43 +1,51 @@
-import React from 'react';
+import React from "react";
+import Header from "../components/Header/Header";
+import SearchBar from "../components/SearchBar/SearchBar";
+import ArrivalTime from "../components/ArrivalTime/ArrivalTime";
+import Favorites from "../components/Favorites/Favorites";
+import RecentHistory from "../components/RecentHistory/RecentHistory";
 
 function About() {
+  const favorites = ["집", "기숙사", "회사", "집", "기숙사", "회사", "집", "기숙사", "회사"];
+  const recentPath = [
+    {start: "대전역", end: "세종관"},
+    {start: "카이스트 택시 승강장", end: "대전역"},
+    {start: "대전역", end: "세종관"},
+    {start: "카이스트 택시 승강장", end: "대전역"}
+  ]
+  const recentHistory = [
+    { name: "집", address: "대전광역시 유성구 대학로 291" },
+    { name: "대전역", address: "대전 동구 중앙로 215" },
+    { name: "카이스트 택시 승강장", address: "대전 동구 중앙로 215" },
+    { name: "집", address: "대전광역시 유성구 대학로 291" },
+    { name: "대전역", address: "대전 동구 중앙로 215" },
+    { name: "카이스트 택시 승강장", address: "대전 동구 중앙로 215" },
+        { name: "집", address: "대전광역시 유성구 대학로 291" },
+    { name: "대전역", address: "대전 동구 중앙로 215" },
+    { name: "카이스트 택시 승강장", address: "대전 동구 중앙로 215" }
+  ];
+
+  const handlePathDelete = (path) => {
+    console.log(`${path.start} → ${path.end} 경로 삭제됨`);
+  };
+
+  const handleItemDelete = (item) => {
+    console.log(`${item.title} 삭제됨`);
+  };
+
   return (
-    <div style={styles.container}>
-      <h1 style={styles.heading}>About Our App</h1>
-      <p style={styles.paragraph}>
-        Our web application is designed to help drivers move seamlessly without being delayed by traffic signals. By leveraging real-time traffic data and advanced route optimization algorithms, we aim to:
-      </p>
-      <ul style={styles.list}>
-        <li>Provide the most efficient routes for drivers.</li>
-        <li>Reduce travel time and fuel consumption.</li>
-        <li>Contribute to easing urban traffic congestion.</li>
-      </ul>
-      <p style={styles.paragraph}>
-        Whether you're commuting, making deliveries, or just exploring the city, our app ensures a smoother driving experience. Join us in making traffic a little less stressful!
-      </p>
+    <div style={{ padding: "16px", fontFamily: "Arial, sans-serif" }}>
+      <Header />
+      <SearchBar />
+      <ArrivalTime />
+      <Favorites favorites={favorites} />
+      <RecentHistory 
+        recentPath={recentPath} 
+        recentHistory={recentHistory} 
+        onPathDelete={handlePathDelete}
+        onItemDelete={handleItemDelete}/>
     </div>
   );
-}
-
-const styles = {
-  container: {
-    padding: '20px',
-    fontFamily: 'Arial, sans-serif',
-    lineHeight: '1.6',
-  },
-  heading: {
-    fontSize: '2rem',
-    marginBottom: '10px',
-  },
-  paragraph: {
-    fontSize: '1rem',
-    marginBottom: '15px',
-  },
-  list: {
-    listStyleType: 'disc',
-    marginLeft: '20px',
-    marginBottom: '15px',
-  },
 };
 
 export default About;

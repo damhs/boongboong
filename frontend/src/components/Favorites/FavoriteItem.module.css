@@ -1,0 +1,23 @@
+.favoriteButton {
+    background: #ffffff;
+    display: flex; /* Flexbox 활성화 */
+    border: 1px solid #ccc;
+    align-items: center;
+    justify-content: center; /* 가로 중앙 정렬 */
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-size: 14px;
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .favoriteButton:hover {
+    background: #f0f0f0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .starIcon{
+    margin-right: 2vw;
+  }
+
