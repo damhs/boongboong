@@ -7,6 +7,10 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 
+/**
+ * OpenAPI 스펙:
+ *  placeID, placeType, placeName, latitude, longitude, etc
+ */
 @Entity
 @Table(name = "Place")
 @Getter
@@ -19,12 +23,11 @@ public class Place {
     private String placeID;
 
     @Column(length = 20)
-    private String placeType;
+    private String placeType; // ORIGIN, DESTINATION, INTERSECTION 등
 
-    @Column(length = 20)
+    @Column(length = 50)
     private String placeName;
 
-    // DECIMAL(13,10)을 자바 BigDecimal 로 매핑
     @Column(precision = 13, scale = 10)
     private BigDecimal latitude;
 

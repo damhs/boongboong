@@ -19,16 +19,16 @@ public class Favorite {
     private String favoriteID;
 
     @ManyToOne
-    @JoinColumn(name = "userID")
+    @JoinColumn(name = "userID")   // FK -> User
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "placeID")
+    @JoinColumn(name = "placeID")  // FK -> Place
     private Place place;
 
-    @Column(length = 20)
+    @Column(length = 50)
     private String favoriteName;
 
-    @Column(name = "updateAt")
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 }

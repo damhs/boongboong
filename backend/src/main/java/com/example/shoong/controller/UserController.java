@@ -1,58 +1,65 @@
 package com.example.shoong.controller;
 
-import com.example.shoong.entity.User;
+import com.example.shoong.dto.user.UserCreateRequest;
+import com.example.shoong.dto.user.UserDTO;
+import com.example.shoong.dto.user.UserUpdateRequest;
 import com.example.shoong.service.UserService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 public class UserController {
-  private final UserService userService;
 
-  public UserController(UserService userService) {
-    this.userService = userService;
-  }
-
-  // Create a new user
-  @PostMapping
-  public ResponseEntity<User> createUser(@RequestBody User user) {
-    User createdUser = userService.createUser(user);
-    return ResponseEntity.ok(createdUser);
-  }
-
-  // Get all users
-  @GetMapping
-  public ResponseEntity<List<User>> getAllUsers() {
-    List<User> users = userService.getAllUsers();
-    return ResponseEntity.ok(users);
-  }
-
-  // Get a user by ID
-  @GetMapping("/{id}")
-  public ResponseEntity<User> getUserById(@PathVariable String id) {
-    return userService.getUserById(id)
-        .map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
-  }
-
-  // Update a user
-  @PutMapping("/{id}")
-  public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody User user) {
-    try {
-      User updatedUser = userService.updateUser(id, user);
-      return ResponseEntity.ok(updatedUser);
-    } catch (RuntimeException e) {
-      return ResponseEntity.notFound().build();
+    private final UserService userService;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
-  }
 
-  // Delete a user
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteUser(@PathVariable String id) {
-    userService.deleteUser(id);
-    return ResponseEntity.noContent().build();
-  }
+    /**
+     * [POST] /users
+     * 유저 생성
+     */
+    @PostMapping
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserCreateRequest request) {
+        // @Valid -> UserCreateRequest의 @NotBlank, @Size 등 검증
+        UserDTO saved = userService.createUser(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    }
+
+    /**
+     * [GET] /users/{userID}
+     * 특정 유저 조회
+     */
+    @GetMapping("/{userID}")
+    public ResponseEntity<UserDTO> getUser(@PathVariable String userID) {
+        UserDTO dto = userService.getUser(userID);
+        return ResponseEntity.ok(dto);
+    }
+
+    /**
+     * [PUT] /users/{userID}
+     * 특정 유저 수정
+     */
+    @PutMapping("/{userID}")
+    public ResponseEntity<UserDTO> updateUser(
+            @PathVariable String userID,
+            @Valid @RequestBody UserUpdateRequest request
+    ) {
+        // @Valid -> UserUpdateRequest의 @Size 등 검증
+        UserDTO updated = userService.updateUser(userID, request);
+        return ResponseEntity.ok(updated);
+    }
+
+    /**
+     * [DELETE] /users/{userID}
+     * 특정 유저 삭제
+     */
+    @DeleteMapping("/{userID}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String userID) {
+        userService.deleteUser(userID);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -19,14 +19,14 @@ public class Segment {
 
   @ManyToOne
   @JoinColumn(name = "pathID", nullable = false)
-  private Path pathID;
+  private Path path;
 
-  private Byte sequenceNumber; // TINYINT => Byte로 매핑
+  private Integer sequenceNumber;
 
   @Column(length = 255)
   private String description;
 
-  private Short distance;        // SMALLINT => Short로 매핑
+  private Integer distance;
 
   private LocalTime duration;    // TIME => LocalTime으로 매핑
 }
