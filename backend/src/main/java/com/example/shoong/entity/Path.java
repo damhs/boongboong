@@ -25,7 +25,7 @@ public class Path {
 
     @ManyToOne
     @JoinColumn(name = "originID") // FK
-    private Place origin;    
+    private Place origin;
 
     @ManyToOne
     @JoinColumn(name = "destinationID") // FK
@@ -37,7 +37,6 @@ public class Path {
     @Column(name = "totalTime")
     private LocalTime totalTime;
 
-    @Column(name = "updateAt")
-    private LocalDateTime updatedAt;
-    
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 }

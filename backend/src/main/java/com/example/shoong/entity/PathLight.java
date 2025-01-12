@@ -22,7 +22,7 @@ public class PathLight {
 
     // DB 컬럼이 lightID2 이므로 따로 설정
     @ManyToOne
-    @JoinColumn(name = "lightID2")
+    @JoinColumn(name = "lightID")
     private Light light;
 
     private Boolean isAvoided;

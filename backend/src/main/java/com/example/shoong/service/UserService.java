@@ -1,46 +1,96 @@
 package com.example.shoong.service;
 
+import com.example.shoong.dto.user.UserCreateRequest;
+import com.example.shoong.dto.user.UserDTO;
+import com.example.shoong.dto.user.UserUpdateRequest;
 import com.example.shoong.entity.User;
+import com.example.shoong.exception.ResourceNotFoundException;
 import com.example.shoong.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 public class UserService {
-  private final UserRepository userRepository;
 
-  public UserService(UserRepository userRepository) {
-    this.userRepository = userRepository;
-  }
+    private final UserRepository userRepository;
 
-  // Create a new user
-  public User createUser(User user) {
-    return userRepository.save(user);
-  }
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
-  // Get all users
-  public List<User> getAllUsers() {
-    return userRepository.findAll();
-  }
+    /**
+     * 유저 생성 로직
+     */
+    @Transactional
+    public UserDTO createUser(UserCreateRequest request) {
+        // 엔티티 생성
+        User user = new User();
+        user.setUserID(UUID.randomUUID().toString());   // PK 생성
+        user.setName(request.getName());
+        user.setId(request.getId());
+        user.setPassword(request.getPassword());
+        user.setUpdatedAt(LocalDateTime.now());
 
-  // Get a user by ID
-  public Optional<User> getUserById(String id) {
-    return userRepository.findById(id);
-  }
+        // 저장
+        User saved = userRepository.save(user);
 
-  // Update a user
-  public User updateUser(String id, User userDetails) {
-    return userRepository.findById(id).map(user -> {
-      user.setName(userDetails.getName());
-      user.setPassword(userDetails.getPassword());
-      return userRepository.save(user);
-    }).orElseThrow(() -> new RuntimeException("User not found with id " + id));
-  }
+        // 엔티티 -> DTO 변환
+        return toUserDTO(saved);
+    }
 
-  // Delete a user
-  public void deleteUser(String id) {
-    userRepository.deleteById(id);
-  }
+    /**
+     * 유저 단건 조회 (Response DTO로 변환)
+     */
+    @Transactional(readOnly = true)
+    public UserDTO getUser(String userID) {
+        User user = userRepository.findById(userID)
+            .orElseThrow(() -> new ResourceNotFoundException("유저를 찾을 수 없습니다. ID=" + userID));
+        return toUserDTO(user);
+    }
+
+    /**
+     * 유저 수정
+     */
+    @Transactional
+    public UserDTO updateUser(String userID, UserUpdateRequest request) {
+        User user = userRepository.findById(userID)
+            .orElseThrow(() -> new ResourceNotFoundException("유저를 찾을 수 없습니다. ID=" + userID));
+
+        if (request.getName() != null) {
+            user.setName(request.getName());
+        }
+        if (request.getPassword() != null) {
+            user.setPassword(request.getPassword());
+        }
+        user.setUpdatedAt(LocalDateTime.now());
+
+        return toUserDTO(user); // JPA 변경 감지로 자동 업데이트됨
+    }
+
+    /**
+     * 유저 삭제
+     */
+    @Transactional
+    public void deleteUser(String userID) {
+        if (!userRepository.existsById(userID)) {
+            throw new ResourceNotFoundException("유저를 찾을 수 없습니다. ID=" + userID);
+        }
+        userRepository.deleteById(userID);
+    }
+
+    /**
+     * 엔티티 -> DTO 변환 (응답용)
+     */
+    private UserDTO toUserDTO(User user) {
+        UserDTO dto = new UserDTO();
+        dto.setUserID(user.getUserID());
+        dto.setName(user.getName());
+        dto.setId(user.getId());
+        // LocalDateTime -> 문자열 변환(간단 예시)
+        dto.setUpdatedAt((user.getUpdatedAt() != null) ? user.getUpdatedAt().toString() : null);
+        return dto;
+    }
 }
