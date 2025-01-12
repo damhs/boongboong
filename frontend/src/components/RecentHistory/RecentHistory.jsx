@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import axios from "axios";
 import styles from "./RecentHistory.module.css";
 import RecentHistoryItem from "./RecentHistoryItem";
 import PathItem from "./PathItem";
@@ -6,7 +7,7 @@ import config from "../../config";
 
 const baseurl = config.backendUrl;
 
-const RecentHistory = ({ onPathDelete, onItemDelete }) => {
+const RecentHistory = ({ userID, onPathDelete, onItemDelete }) => {
   const scrollRef = useRef(null);
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
@@ -31,6 +32,33 @@ const RecentHistory = ({ onPathDelete, onItemDelete }) => {
       setIsDragging(false);
     };
 
+  // API 호출
+  const callRecentPath = async () => {
+    try {
+      const res = await axios.get(`${baseurl}/paths/${userID}/recents`);
+      setRecentPath(res.data); // API에서 받은 데이터를 state에 저장
+    } catch (error) {
+      console.error("Failed to get recent path:", error);
+    }
+  };
+
+  // API 호출
+  const callRecentHistory = async () => {
+    try {
+      const res = await axios.get(`${baseurl}/recents/${userID}`);
+      setRecentHistory(res.data); // API에서 받은 데이터를 state에 저장
+    } catch (error) {
+      console.error("Failed to get recent path:", error);
+    }
+  };
+
+  // 컴포넌트가 처음 렌더링될 때 또는 userID가 변경될 때 데이터 가져오기
+  useEffect(() => {
+    if (userID) {
+      callRecentPath();
+      callRecentHistory();
+    }
+  }, [userID]);
 
   return (
     <div className={styles.container}>
@@ -46,7 +74,7 @@ const RecentHistory = ({ onPathDelete, onItemDelete }) => {
         onMouseLeave={handleMouseUp}
       >
         {recentPath.map((path, index) => (
-          <PathItem key={index} path={path} onDelete={() => onPathDelete(path)}/>
+          <PathItem key={index} path={path} onDelete={() => onPathDelete(path.id)}/>
         ))}
       </div>
 
@@ -59,7 +87,7 @@ const RecentHistory = ({ onPathDelete, onItemDelete }) => {
         onMouseLeave={handleMouseUp}
       >
         {recentHistory.map((item, index) => (
-          <RecentHistoryItem key={index} item={item} onDelete={() => onItemDelete(item)} />
+          <RecentHistoryItem key={index} item={item} onDelete={() => onItemDelete(item.id)} />
         ))}
       </div>
     </div>

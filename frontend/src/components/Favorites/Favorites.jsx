@@ -38,7 +38,7 @@ const Favorites = ({ userID, onPlaceClick }) => {
       const res = await axios.get(`${baseurl}/favorites/${userID}`);
       setFavorites(res.data); // API에서 받은 데이터를 state에 저장
     } catch (error) {
-      console.error("Failed to fetch favorites:", error);
+      console.error("Failed to get favorites:", error);
     }
   };
 
