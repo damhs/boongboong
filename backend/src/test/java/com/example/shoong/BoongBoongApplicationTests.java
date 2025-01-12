@@ -1,4 +1,4 @@
-package com.example.boong_boong;
+package com.example.shoong;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

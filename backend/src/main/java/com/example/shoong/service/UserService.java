@@ -1,7 +1,7 @@
-package com.example.boong_boong.service;
+package com.example.shoong.service;
 
-import com.example.boong_boong.entity.User;
-import com.example.boong_boong.repository.UserRepository;
+import com.example.shoong.entity.User;
+import com.example.shoong.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,21 +26,21 @@ public class UserService {
   }
 
   // Get a user by ID
-  public Optional<User> getUserById(Long id) {
+  public Optional<User> getUserById(String id) {
     return userRepository.findById(id);
   }
 
   // Update a user
-  public User updateUser(Long id, User userDetails) {
+  public User updateUser(String id, User userDetails) {
     return userRepository.findById(id).map(user -> {
       user.setName(userDetails.getName());
-      user.setEmail(userDetails.getEmail());
+      user.setPassword(userDetails.getPassword());
       return userRepository.save(user);
     }).orElseThrow(() -> new RuntimeException("User not found with id " + id));
   }
 
   // Delete a user
-  public void deleteUser(Long id) {
+  public void deleteUser(String id) {
     userRepository.deleteById(id);
   }
 }

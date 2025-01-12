@@ -1,7 +1,7 @@
-package com.example.boong_boong.controller;
+package com.example.shoong.controller;
 
-import com.example.boong_boong.entity.User;
-import com.example.boong_boong.service.UserService;
+import com.example.shoong.entity.User;
+import com.example.shoong.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +32,7 @@ public class UserController {
 
   // Get a user by ID
   @GetMapping("/{id}")
-  public ResponseEntity<User> getUserById(@PathVariable Long id) {
+  public ResponseEntity<User> getUserById(@PathVariable String id) {
     return userService.getUserById(id)
         .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
@@ -40,7 +40,7 @@ public class UserController {
 
   // Update a user
   @PutMapping("/{id}")
-  public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+  public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody User user) {
     try {
       User updatedUser = userService.updateUser(id, user);
       return ResponseEntity.ok(updatedUser);
@@ -51,7 +51,7 @@ public class UserController {
 
   // Delete a user
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+  public ResponseEntity<Void> deleteUser(@PathVariable String id) {
     userService.deleteUser(id);
     return ResponseEntity.noContent().build();
   }

@@ -1,4 +1,4 @@
-package com.example.boong_boong;
+package com.example.shoong;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
