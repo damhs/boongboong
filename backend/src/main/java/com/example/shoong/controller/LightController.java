@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/lights")
+@RequestMapping("/api/lights")
 public class LightController {
 
     private final LightService lightService;

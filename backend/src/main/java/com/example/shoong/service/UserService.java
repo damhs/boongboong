@@ -6,11 +6,11 @@ import com.example.shoong.dto.user.UserUpdateRequest;
 import com.example.shoong.entity.User;
 import com.example.shoong.exception.ResourceNotFoundException;
 import com.example.shoong.repository.UserRepository;
+import com.github.f4b6a3.uuid.UuidCreator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 public class UserService {
@@ -28,8 +28,8 @@ public class UserService {
     public UserDTO createUser(UserCreateRequest request) {
         // 엔티티 생성
         User user = new User();
-        user.setUserID(UUID.randomUUID().toString());   // PK 생성
-        user.setName(request.getName());
+        user.setUserID(UuidCreator.getTimeOrdered().toString());   // PK 생성
+        // user.setName(request.getName());
         user.setId(request.getId());
         user.setPassword(request.getPassword());
         user.setUpdatedAt(LocalDateTime.now());

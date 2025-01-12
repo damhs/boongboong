@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/segments")
+@RequestMapping("/api/segments")
 public class SegmentController {
 
     private final SegmentService segmentService;

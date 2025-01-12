@@ -11,7 +11,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/recents")
+@RequestMapping("/api/recents")
 public class RecentController {
 
     private final RecentService recentService;

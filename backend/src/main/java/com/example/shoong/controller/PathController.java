@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/paths")
+@RequestMapping("/api/paths")
 public class PathController {
 
     private final PathService pathService;
