@@ -8,6 +8,7 @@ function Navbar() {
       <ul style={styles.navList}>
         <li><Link to="/" style={styles.link}>Home</Link></li>
         <li><Link to="/about" style={styles.link}>About</Link></li>
+        <li><Link to="/login" style={styles.link}>Login</Link></li>
       </ul>
     </nav>
   );
