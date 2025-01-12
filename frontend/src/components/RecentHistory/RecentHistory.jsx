@@ -1,19 +1,19 @@
 import React, { useRef, useState } from "react";
-import axios from "axios";
 import styles from "./RecentHistory.module.css";
 import RecentHistoryItem from "./RecentHistoryItem";
 import PathItem from "./PathItem";
-import config from "../../config";
+// import axios from "axios";
+// import config from "../../config";
 
-const baseurl = config.backendUrl;
+// const baseurl = config.backendUrl;
 
-const RecentHistory = ({ userID, onPathDelete, onItemDelete }) => {
+const RecentHistory = ({ recentPath, recentHistory, onPathDelete, onItemDelete }) => {
   const scrollRef = useRef(null);
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
-    const [recentPath, setRecentPath] = useState([]);
-    const [recentHistory, setRecentHistory] = useState([]);
+    // const [recentPath, setRecentPath] = useState([]);
+    // const [recentHistory, setRecentHistory] = useState([]);
   
     const handleMouseDown = (e) => {
       setIsDragging(true);
@@ -32,33 +32,33 @@ const RecentHistory = ({ userID, onPathDelete, onItemDelete }) => {
       setIsDragging(false);
     };
 
-  // API 호출
-  const callRecentPath = async () => {
-    try {
-      const res = await axios.get(`${baseurl}/paths/${userID}/recents`);
-      setRecentPath(res.data); // API에서 받은 데이터를 state에 저장
-    } catch (error) {
-      console.error("Failed to get recent path:", error);
-    }
-  };
+  // // API 호출
+  // const callRecentPath = async () => {
+  //   try {
+  //     const res = await axios.get(`${baseurl}/paths/${userID}/recents`);
+  //     setRecentPath(res.data); // API에서 받은 데이터를 state에 저장
+  //   } catch (error) {
+  //     console.error("Failed to get recent path:", error);
+  //   }
+  // };
 
-  // API 호출
-  const callRecentHistory = async () => {
-    try {
-      const res = await axios.get(`${baseurl}/recents/${userID}`);
-      setRecentHistory(res.data); // API에서 받은 데이터를 state에 저장
-    } catch (error) {
-      console.error("Failed to get recent path:", error);
-    }
-  };
+  // // API 호출
+  // const callRecentHistory = async () => {
+  //   try {
+  //     const res = await axios.get(`${baseurl}/recents/${userID}`);
+  //     setRecentHistory(res.data); // API에서 받은 데이터를 state에 저장
+  //   } catch (error) {
+  //     console.error("Failed to get recent path:", error);
+  //   }
+  // };
 
-  // 컴포넌트가 처음 렌더링될 때 또는 userID가 변경될 때 데이터 가져오기
-  useEffect(() => {
-    if (userID) {
-      callRecentPath();
-      callRecentHistory();
-    }
-  }, [userID]);
+  // // 컴포넌트가 처음 렌더링될 때 또는 userID가 변경될 때 데이터 가져오기
+  // useEffect(() => {
+  //   if (userID) {
+  //     callRecentPath();
+  //     callRecentHistory();
+  //   }
+  // }, [userID]);
 
   return (
     <div className={styles.container}>

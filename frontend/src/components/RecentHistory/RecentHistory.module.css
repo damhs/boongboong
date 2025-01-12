@@ -20,7 +20,9 @@
 .cardContainer {
   display: flex;
   overflow-x: scroll; /* 가로 스크롤 활성화 */
-  margin: 3vw;
+  margin-left: 3vw;
+  margin-right: 3vw;
+  margin-top: 1vh;
   gap: 15px;
 }
 

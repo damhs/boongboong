@@ -29,7 +29,7 @@
   .scrollContainer {
     display: flex;
     overflow-x: scroll; /* 가로 스크롤 활성화 */
-    margin: 3vw;
+    margin: 3vh;
     gap: 10px;
   }
   .scrollContainer::-webkit-scrollbar {
