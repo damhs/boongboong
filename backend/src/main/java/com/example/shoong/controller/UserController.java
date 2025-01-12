@@ -13,53 +13,64 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final UserService userService;
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+  private final UserService userService;
 
-    /**
-     * [POST] /users
-     * 유저 생성
-     */
-    @PostMapping
-    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserCreateRequest request) {
-        // @Valid -> UserCreateRequest의 @NotBlank, @Size 등 검증
-        UserDTO saved = userService.createUser(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
-    }
+  public UserController(UserService userService) {
+    this.userService = userService;
+  }
 
-    /**
-     * [GET] /users/{userID}
-     * 특정 유저 조회
-     */
-    @GetMapping("/{userID}")
-    public ResponseEntity<UserDTO> getUser(@PathVariable String userID) {
-        UserDTO dto = userService.getUser(userID);
-        return ResponseEntity.ok(dto);
-    }
+  /**
+   * [POST] /users
+   * 유저 생성
+   */
+  @PostMapping
+  public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserCreateRequest request) {
+    // @Valid -> UserCreateRequest의 @NotBlank, @Size 등 검증
+    UserDTO saved = userService.createUser(request);
+    return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+  }
 
-    /**
-     * [PUT] /users/{userID}
-     * 특정 유저 수정
-     */
-    @PutMapping("/{userID}")
-    public ResponseEntity<UserDTO> updateUser(
-            @PathVariable String userID,
-            @Valid @RequestBody UserUpdateRequest request
-    ) {
-        // @Valid -> UserUpdateRequest의 @Size 등 검증
-        UserDTO updated = userService.updateUser(userID, request);
-        return ResponseEntity.ok(updated);
-    }
+  /**
+   * [POST] /users/login
+   * 로그인 요청
+   */
+  @PostMapping("/login")
+  public ResponseEntity<UserDTO> login(@Valid @RequestBody UserCreateRequest request) {
+    // id와 password를 이용해 로그인 처리
+    UserDTO user = userService.login(request.getId(), request.getPassword());
+    return ResponseEntity.ok(user); // 성공 응답
+  }
 
-    /**
-     * [DELETE] /users/{userID}
-     * 특정 유저 삭제
-     */
-    @DeleteMapping("/{userID}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String userID) {
-        userService.deleteUser(userID);
-        return ResponseEntity.noContent().build();
-    }
+  /**
+   * [GET] /users/{userID}
+   * 특정 유저 조회
+   */
+  @GetMapping("/{userID}")
+  public ResponseEntity<UserDTO> getUser(@PathVariable String userID) {
+    UserDTO dto = userService.getUser(userID);
+    return ResponseEntity.ok(dto);
+  }
+
+  /**
+   * [PUT] /users/{userID}
+   * 특정 유저 수정
+   */
+  @PutMapping("/{userID}")
+  public ResponseEntity<UserDTO> updateUser(
+      @PathVariable String userID,
+      @Valid @RequestBody UserUpdateRequest request) {
+    // @Valid -> UserUpdateRequest의 @Size 등 검증
+    UserDTO updated = userService.updateUser(userID, request);
+    return ResponseEntity.ok(updated);
+  }
+
+  /**
+   * [DELETE] /users/{userID}
+   * 특정 유저 삭제
+   */
+  @DeleteMapping("/{userID}")
+  public ResponseEntity<Void> deleteUser(@PathVariable String userID) {
+    userService.deleteUser(userID);
+    return ResponseEntity.noContent().build();
+  }
 }
