@@ -2,7 +2,7 @@
     margin-bottom: 4vh;
   }
   
-  .title {
+  .pageTitle {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -17,30 +17,10 @@
     padding-bottom: 1vh; /* 구분선과 간격 */
   }
   
-  .cardContainer {
-    display: flex;
-    overflow-x: scroll; /* 가로 스크롤 활성화 */
-    margin-left: 3vw;
-    margin-right: 3vw;
-    margin-top: 1vh;
-    gap: 15px;
-  }
-  
-  .cardContainer::-webkit-scrollbar {
-    display: none; /* Chrome, Safari */
-  }
-  .cardContainer:active {
-    cursor: grabbing; /* 활성 상태에서 커서 변경 */
-  }
-  .cardContainer {
-    scroll-snap-type: x mandatory; /* 스크롤 스냅 설정 */
-  }
-  
   .listContainer {
     display: flex;
     flex-direction: column;
     overflow-y: scroll; /* 가로 스크롤 활성화 */
-    max-height: 40vh;
     margin: 3vw;
     gap: 20px;
   }
@@ -55,3 +35,29 @@
     scroll-snap-type: x mandatory; /* 스크롤 스냅 설정 */
   }
   
+  .item {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid #ccc;
+    border-radius: 12px;
+    gap: 2px;
+    padding-left: 8px;
+  }
+
+  .title {
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--black);
+    margin-bottom: 3px;
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    overflow: hidden; /* 넘치는 텍스트 숨기기 */
+    text-overflow: ellipsis; /* 말줄임표(...) 적용 */
+  }
+  
+  .subtitle {
+    font-size: 12px;
+    color: var(--darkgray);
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    overflow: hidden; /* 넘치는 텍스트 숨기기 */
+    text-overflow: ellipsis; /* 말줄임표(...) 적용 */
+  }

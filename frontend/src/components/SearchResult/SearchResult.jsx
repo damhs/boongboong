@@ -1,23 +1,29 @@
-import React, { useRef, useState } from "react";
+import React from "react";
+import styles from "./SearchResult.module.css";
 
-function SearchResult({ searchResults }) {
+function SearchResult({ searchResults, onSelect }) {
   if (!searchResults || searchResults.length === 0) {
     return <p>검색 결과가 없습니다.</p>;
   }
 
+  const stripHtmlTags = (html) => {
+    return html.replace(/<\/?[^>]+(>|$)/g, ""); // HTML 태그 제거
+  };
+
   return (
-    <div>
-      <h2>검색 결과</h2>
-      <ul>
+    <div className={styles.container}>
+      <div className={styles.pageTitle}>검색 결과</div>
+      <div className={styles.listContainer}>
         {searchResults.map((result, index) => (
-          <li key={index}>
-            <a href={result.address} target="_blank" rel="noopener noreferrer">
-              {result.title}
-            </a>
-            <p>{result.description}</p>
-          </li>
+          <div 
+            key={index} 
+            className={styles.item}
+            onClick={() => onSelect(stripHtmlTags(result.roadAddress))}>
+            <p className={styles.title}>{stripHtmlTags(result.title)}</p>
+            <p className={styles.subtitle}>{stripHtmlTags(result.roadAddress)}</p>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }

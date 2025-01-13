@@ -25,28 +25,17 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>React App</title>
-    <!-- (1) config.js 불러오기 -->
+
     <script src="%PUBLIC_URL%/config.js"></script>
-
-    <script>
-      // (2) config.js 로드가 끝난 시점에서, 네이버 지도 스크립트 태그를 동적으로 생성
-      (function() {
-        var script = document.createElement("script");
-        script.type = "text/javascript";
-        script.src = "https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=" + window.NAVER_CLIENT_ID;
-        document.head.appendChild(script);
-      })();
+    <script type="text/javascript">
+      // config.js 에서 NAVER_CLIENT_ID를 가져옴
+      document.write(
+        '<script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=' +
+        window.NAVER_CLIENT_ID +
+        '&submodules=geocoder"><\/script>'
+      );
     </script>
-
-    <script>
-      (function() {
-        var script = document.createElement("script");
-        script.type = "text/javascript";
-        script.src = "https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=" + window.NAVER_CLIENT_ID + "&submodules=geocoder";
-        document.head.appendChild(script);
-      })();
-    </script>
-
+    
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

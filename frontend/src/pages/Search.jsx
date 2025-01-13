@@ -102,7 +102,7 @@ function Search() {
 
         console.log(`${type} 좌표: 위도(${item.y}), 경도(${item.x})`);
       }
-    )
+    );
   };
 
   const handleFindPath = async () => {

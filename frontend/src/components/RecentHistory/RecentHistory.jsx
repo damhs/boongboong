@@ -9,28 +9,28 @@ import PathItem from "./PathItem";
 
 const RecentHistory = ({ recentPath, recentHistory, onPathDelete, onItemDelete, onItemSelect }) => {
   const scrollRef = useRef(null);
-    const [isDragging, setIsDragging] = useState(false);
-    const [startX, setStartX] = useState(0);
-    const [scrollLeft, setScrollLeft] = useState(0);
-    // const [recentPath, setRecentPath] = useState([]);
-    // const [recentHistory, setRecentHistory] = useState([]);
-  
-    const handleMouseDown = (e) => {
-      setIsDragging(true);
-      setStartX(e.pageX - scrollRef.current.offsetLeft);
-      setScrollLeft(scrollRef.current.scrollLeft);
-    };
-  
-    const handleMouseMove = (e) => {
-      if (!isDragging) return;
-      const x = e.pageX - scrollRef.current.offsetLeft;
-      const walk = (x - startX) * 1; // 드래그 속도 조정
-      scrollRef.current.scrollLeft = scrollLeft - walk;
-    };
-  
-    const handleMouseUp = () => {
-      setIsDragging(false);
-    };
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+  // const [recentPath, setRecentPath] = useState([]);
+  // const [recentHistory, setRecentHistory] = useState([]);
+
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 1; // 드래그 속도 조정
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
 
   // // API 호출
   // const callRecentPath = async () => {

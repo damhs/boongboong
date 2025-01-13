@@ -21,22 +21,11 @@ function SearchPlace() {
     ]);
 
   const [searchResults, setSearchResults] = useState([]);
-
-
   const [activeComponent, setActiveComponent] = useState("Recent");
-
-  // const handleShowComponentRecent = () => {
-  //   console.log("Recent");
-  //   setActiveComponent("Recent");
-  // };
-  // const handleShowComponentSearch = () => {
-  //   console.log("Search");
-  //   setActiveComponent("Search");
-  // };
 
   const handleSelectRecent = (item) => {
     // 최근 내역 중 하나 선택 시 → 첫 번째 화면으로 돌아가면서 전달
-    const selectedPlace = item.name;
+    const selectedPlace = item.address;
 
     if (placeType === "departure") {
       localStorage.setItem("departure", selectedPlace);
@@ -65,16 +54,17 @@ function SearchPlace() {
       }
 
       setActiveComponent("Search");
-
-      // navigate('/search-result', {
-      //   state: { 
-      //     searchInput: searchInput,
-      //     placeType: placeType 
-      //   },
-      // });
+      
     } catch (error) {
       console.error("Failed to search:", error);
     }
+  };
+
+  const handleSelect = (selectedPlace) => {
+    // 출발지 또는 도착지 여부를 함께 전달
+    navigate("/search", {
+      state: { selectedPlace, placeType: placeType }, // "departure" 또는 "arrival" 설정
+    });
   };
 
   const handleItemDelete = (itemId) => {
@@ -106,7 +96,8 @@ function SearchPlace() {
             style={{marginLeft: "3vw", marginRight: "3vw"} 
           }/>
         )}
-        {activeComponent === "Search" && <SearchResult searchResults={searchResults}/>}
+        {activeComponent === "Search" && 
+          <SearchResult searchResults={searchResults} onSelect={handleSelect}/>}
       </div>
     </div>
   );

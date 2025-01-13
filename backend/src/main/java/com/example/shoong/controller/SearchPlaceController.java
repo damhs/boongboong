@@ -28,6 +28,7 @@ public class SearchPlaceController {
             .fromUriString("https://openapi.naver.com")
             .path("/v1/search/local.json")
             .queryParam("query", text)
+            .queryParam("display", 5)
             .encode(Charset.forName("UTF-8"))
             .build()
             .toUri();
