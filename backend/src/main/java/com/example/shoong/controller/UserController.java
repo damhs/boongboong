@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.ui.Model;
 
 @RestController
 @RequestMapping("/api/users")
@@ -31,6 +32,16 @@ public class UserController {
   }
 
   /**
+   * [GET] /users
+   * 모든 유저 조회
+   */
+  @GetMapping
+  public ResponseEntity<Iterable<UserDTO>> getUsers() {
+    Iterable<UserDTO> users = userService.getUsers();
+    return ResponseEntity.ok(users);
+  }
+
+  /**
    * [POST] /users/login
    * 로그인 요청
    */
@@ -39,6 +50,21 @@ public class UserController {
     // id와 password를 이용해 로그인 처리
     UserDTO user = userService.login(request.getId(), request.getPassword());
     return ResponseEntity.ok(user); // 성공 응답
+  }
+
+  @GetMapping("/login")
+  public String loginForm(
+      @RequestParam(value = "error", required = false) String error,
+      @RequestParam(value = "logout", required = false) String logout,
+      Model model) {
+
+    if (error != null) {
+      model.addAttribute("errorMsg", "아이디 또는 비밀번호가 잘못되었습니다.");
+    }
+    if (logout != null) {
+      model.addAttribute("logoutMsg", "로그아웃 되었습니다.");
+    }
+    return "login"; // login.html (Thymeleaf) or login.jsp
   }
 
   /**

@@ -7,18 +7,23 @@ import com.example.shoong.entity.User;
 import com.example.shoong.exception.ResourceNotFoundException;
 import com.example.shoong.repository.UserRepository;
 import com.github.f4b6a3.uuid.UuidCreator;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
   private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
 
-  public UserService(UserRepository userRepository) {
+  public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
+    this.passwordEncoder = passwordEncoder;
   }
 
   /**
@@ -27,11 +32,14 @@ public class UserService {
   @Transactional
   public UserDTO createUser(UserCreateRequest request) {
     // 엔티티 생성
+
+    // 패스워드 암호화
+    String encodedPassword = passwordEncoder.encode(request.getPassword());
     User user = new User();
     user.setUserID(UuidCreator.getTimeOrdered().toString()); // PK 생성
     // user.setName(request.getName());
     user.setId(request.getId());
-    user.setPassword(request.getPassword());
+    user.setPassword(encodedPassword);
     user.setUpdatedAt(LocalDateTime.now());
 
     // 저장
@@ -49,12 +57,26 @@ public class UserService {
     // id로 유저 조회
     User user = userRepository.findUserById(id)
         .stream()
-        .filter(u -> u.getPassword().equals(password)) // 패스워드 일치 확인
         .findFirst()
         .orElseThrow(() -> new ResourceNotFoundException("유저를 찾을 수 없거나 비밀번호가 일치하지 않습니다."));
 
+    // 사용자가 입력한 비밀번호(rawPassword)와 DB에 저장된 암호화 비밀번호(user.getPassword()) 비교
+    if (!passwordEncoder.matches(password, user.getPassword())) {
+      throw new ResourceNotFoundException("비밀번호가 일치하지 않습니다.");
+    }
     // 성공 시 DTO로 변환하여 반환
     return toUserDTO(user);
+  }
+
+  /**
+   * 모든 유저 조회 (Response DTO로 변환)
+   */
+  @Transactional(readOnly = true)
+  public Iterable<UserDTO> getUsers() {
+    List<User> users = userRepository.findAll();
+    return users.stream()
+        .map(this::toUserDTO)
+        .collect(Collectors.toList());
   }
 
   /**

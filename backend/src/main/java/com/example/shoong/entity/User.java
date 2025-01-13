@@ -24,7 +24,7 @@ public class User {
     @Column(length = 20)
     private String id; // 로그인 아이디
 
-    @Column(length = 30)
+    @Column(length = 100)
     private String password;
 
     @Column(name = "updatedAt")

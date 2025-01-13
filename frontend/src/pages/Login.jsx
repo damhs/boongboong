@@ -8,30 +8,34 @@ import config from "../config";
 const baseUrl = config.backendUrl;
 
 const Login = () => {
-  const [id, setid] = useState("");
+  const [id, setId] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault(); // 폼 제출 시 페이지 새로고침 방지
+
+    const formData = new URLSearchParams();
+    formData.append('id', id);                   // <-- SecurityConfig에서 .usernameParameter("id")
+    formData.append('password', password);       // <-- .passwordParameter("password")
+    formData.append('remember-me', rememberMe ? "on" : "");
+
     try {
-      const response = await axios.post(`${baseUrl}/users/login`, {
-        id,
-        password,
+      console.log("로그인 시도");
+      const response = await axios.post(`${baseUrl}/users/login`, formData, {
+        withCredentials: true,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
 
-      // 서버에서 받은 인증 토큰을 로컬 스토리지에 저장
-      // localStorage.setItem("authToken", response.data.token);
-
       // 로그인 성공 시 홈 화면으로 이동
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 302) {
         navigate("/");
       }
     } catch (err) {
       // 에러 처리 (예: 잘못된 로그인 정보)
       alert(err.response?.data?.message || "로그인 실패");
-      setError(err.response?.data?.message || "로그인 실패");
+      console.error(err);
     }
   };
 
@@ -49,7 +53,7 @@ const Login = () => {
           placeholder="아이디"
           className={styles.input}
           value={id}
-          onChange={(e) => setid(e.target.value)}
+          onChange={(e) => setId(e.target.value)}
         />
         <input
           type="password"
@@ -58,6 +62,15 @@ const Login = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        <label>
+          <input
+            type="checkbox"
+            name="remember-me" // SecurityConfig의 .rememberMeParameter("remember-me")와 일치
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+          />
+          자동 로그인
+        </label>
         <button type="submit" className={styles.loginButton}>
           로그인
         </button>
