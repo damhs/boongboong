@@ -18,7 +18,7 @@ function SearchResult({ searchResults, onSelect }) {
           <div 
             key={index} 
             className={styles.item}
-            onClick={() => onSelect(stripHtmlTags(result.roadAddress))}>
+            onClick={() => onSelect(result)}>
             <p className={styles.title}>{stripHtmlTags(result.title)}</p>
             <p className={styles.subtitle}>{stripHtmlTags(result.roadAddress)}</p>
           </div>

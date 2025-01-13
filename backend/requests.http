@@ -22,3 +22,42 @@ Content-Type: application/json
 }
 
 ###
+
+GET http://localhost:8080/api/users HTTP/1.1
+
+### 모든 장소 조회
+GET http://localhost:8080/api/places HTTP/1.1
+
+### 장소 생성
+POST http://localhost:8080/api/places HTTP/1.1
+Content-Type: application/json
+
+{
+  "placeType": "SPOT",
+  "placeName": "집",
+  "latitude": 1,
+  "longitude": 2,
+  "etc": "서울울"
+}
+
+###
+GET  http://localhost:8080/api/favorites/1efd1a4b-706a-6e71-a44d-e7b1f23b2697 HTTP/1.1
+
+###
+POST http://localhost:8080/api/recents HTTP/1.1
+Content-Type: application/json
+
+{
+  "userID": "1efd1a4b-706a-6e71-a44d-e7b1f23b2697",
+  "placeID": "ab1736c1-13c9-4df9-8440-4bf0ccb2a263"
+}
+
+###
+POST http://localhost:8080/api/favorites HTTP/1.1
+Content-Type: application/json
+
+{
+  "userID": "1efd1a4b-706a-6e71-a44d-e7b1f23b2697",
+  "placeID": "ab1736c1-13c9-4df9-8440-4bf0ccb2a263",
+  "favoriteName": "기숙사"
+}

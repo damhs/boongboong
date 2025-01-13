@@ -1,39 +1,49 @@
 // SearchPlace.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "../components/SearchBar/SearchBar.module.css";
 import { IoSearch } from "react-icons/io5";
 import RecentHistory from "../components/RecentHistory/RecentHistory";
 import SearchResult from "../components/SearchResult/SearchResult";
+import config from "../config";
+
+const baseurl = config.backendUrl;
 
 function SearchPlace() {
   const navigate = useNavigate();
   const location = useLocation();
   const placeType = location.state?.placeType;
+  const userID = "1efd1a4b-706a-6e71-a44d-e7b1f23b2697";
+
   const [searchInput, setSearchInput] = useState('');
-
-  // 가정: 실제로는 localStorage, DB 등에서 받아온 최근 내역 목록
-  const [recentHistory, setRecentHistory] = useState([
-      { id: 1, name: "집", address: "대전광역시 유성구 대학로 291" },
-      { id: 2, name: "대전역", address: "대전 동구 중앙로 215" },
-      { id: 3, name: "카이스트 택시 승강장", address: "대전 동구 중앙로 215" },
-    ]);
-
+  const [recentHistory, setRecentHistory] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [activeComponent, setActiveComponent] = useState("Recent");
 
-  const handleSelectRecent = (item) => {
-    // 최근 내역 중 하나 선택 시 → 첫 번째 화면으로 돌아가면서 전달
-    const selectedPlace = item.address;
+  const fetchRecentHistory = async () => {
+    try {
+      const response = await axios.get(`${baseurl}/recents/${userID}`);
+      setRecentHistory(response.data);
+    } catch (error) {
+      console.error("Failed to fetch recent history:", error);
+    }
+  };
 
+  const handleSelectRecent = async (recentItem) => {
+    // 최근 내역 중 하나 선택 시 → 첫 번째 화면으로 돌아가면서 전달
+    console.log('location.state?.placeType:', location.state?.placeType);
+    const response = await axios.get(`${baseurl}/places/${recentItem.placeID}`);
+    const matchedPlace = response.data;
+    console.log("최근 내역 선택:", matchedPlace);
+    
     if (placeType === "departure") {
-      localStorage.setItem("departure", selectedPlace);
+      localStorage.setItem("departure", JSON.stringify(matchedPlace));
     } else if (placeType === "arrival") {
-      localStorage.setItem("arrival", selectedPlace);
+      localStorage.setItem("arrival", JSON.stringify(matchedPlace));
     }
 
-    navigate('/search', { state: { selectedPlace, placeType } });
+    navigate('/search', { state: { matchedPlace, placeType } });
   };
 
 
@@ -48,28 +58,85 @@ function SearchPlace() {
       setSearchResults(response.data.items);
 
       if (placeType === "departure") {
-        localStorage.setItem("departure", searchInput);
+        localStorage.setItem("departure", JSON.stringify(searchInput));
       } else if (placeType === "arrival") {
-        localStorage.setItem("arrival", searchInput);
+        localStorage.setItem("arrival", JSON.stringify(searchInput));
       }
 
       setActiveComponent("Search");
-      
+
     } catch (error) {
       console.error("Failed to search:", error);
     }
   };
 
-  const handleSelect = (selectedPlace) => {
-    // 출발지 또는 도착지 여부를 함께 전달
-    navigate("/search", {
-      state: { selectedPlace, placeType: placeType }, // "departure" 또는 "arrival" 설정
+  const stripHtmlTags = (html) => {
+    return html.replace(/<\/?[^>]+(>|$)/g, ""); // HTML 태그 제거
+  };
+
+  const fetchCoordinates = (address, type) => {
+    return new Promise((resolve, reject) => {
+      window.naver.maps.Service.geocode(
+        { query: address },
+        (status, response) => {
+          if (status !== window.naver.maps.Service.Status.OK) {
+            console.error(`${type} 좌표 변환 실패: ${status}`);
+            reject(new Error(`${type} 좌표 변환 실패: ${status}`));
+            return;
+          }
+  
+          const item = response.v2.addresses[0];
+          if (!item) {
+            console.error(`${type} 좌표를 찾을 수 없습니다.`);
+            reject(new Error(`${type} 좌표를 찾을 수 없습니다.`));
+            return;
+          }
+  
+          console.log(`${type} 좌표: 위도(${item.y}), 경도(${item.x})`);
+          resolve({ latitude: parseFloat(item.y), longitude: parseFloat(item.x) });
+        }
+      );
     });
+  };
+
+  const handleSelect = async (selectedPlace) => {
+    // 출발지 또는 도착지 여부를 함께 전달
+    console.log("SELECTED PLACE", selectedPlace)
+    const { latitude, longitude } = await fetchCoordinates(selectedPlace.roadAddress, selectedPlace.title);
+    try {
+      const response = await axios.post(`${baseurl}/places`, {
+        placeType: "SPOT",
+        placeName: stripHtmlTags(selectedPlace.title),
+        latitude : latitude,
+        longitude : longitude,
+        etc: stripHtmlTags(selectedPlace.roadAddress)
+      });
+
+      const addedPlace = response.data;
+      console.log("추가된 장소:", addedPlace);
+
+      // localStorage에 저장
+      if (placeType === "departure") {
+        localStorage.setItem("departure", JSON.stringify(addedPlace));
+      } else if (placeType === "arrival") {
+        localStorage.setItem("arrival", JSON.stringify(addedPlace));
+      }
+
+      navigate("/search", {
+        state: { addedPlace, placeType: placeType }, // "departure" 또는 "arrival" 설정
+      });
+    } catch (error) {
+      console.error("Failed to update recent history:", error);
+    }
   };
 
   const handleItemDelete = (itemId) => {
     setRecentHistory((prevHistory) => prevHistory.filter((item) => item.id !== itemId));
   };
+
+  useEffect(() => {
+    fetchRecentHistory();
+  }, []);
 
   return (
     <div>

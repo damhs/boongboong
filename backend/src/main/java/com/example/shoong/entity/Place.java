@@ -23,7 +23,7 @@ public class Place {
     private String placeID;
 
     @Column(length = 20)
-    private String placeType; // ORIGIN, DESTINATION, INTERSECTION 등
+    private String placeType; // SPOT, INTERSECTION 등
 
     @Column(length = 50)
     private String placeName;
@@ -35,5 +35,5 @@ public class Place {
     private BigDecimal longitude;
 
     @Column(length = 255)
-    private String etc;
+    private String etc; // 기타 정보
 }
