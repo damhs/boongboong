@@ -38,7 +38,7 @@ public class UserService {
     User user = new User();
     user.setUserID(UuidCreator.getTimeOrdered().toString()); // PK 생성
     // user.setName(request.getName());
-    user.setId(request.getId());
+    user.setLoginID(request.getLoginID());
     user.setPassword(encodedPassword);
     user.setUpdatedAt(LocalDateTime.now());
 
@@ -53,9 +53,9 @@ public class UserService {
    * 로그인 로직
    */
   @Transactional(readOnly = true)
-  public UserDTO login(String id, String password) {
+  public UserDTO login(String loginID, String password) {
     // id로 유저 조회
-    User user = userRepository.findUserById(id)
+    User user = userRepository.findByLoginID(loginID)
         .stream()
         .findFirst()
         .orElseThrow(() -> new ResourceNotFoundException("유저를 찾을 수 없거나 비밀번호가 일치하지 않습니다."));
@@ -126,7 +126,7 @@ public class UserService {
     UserDTO dto = new UserDTO();
     dto.setUserID(user.getUserID());
     dto.setName(user.getName());
-    dto.setId(user.getId());
+    dto.setLoginID(user.getLoginID());
     // LocalDateTime -> 문자열 변환(간단 예시)
     dto.setUpdatedAt((user.getUpdatedAt() != null) ? user.getUpdatedAt().toString() : null);
     return dto;

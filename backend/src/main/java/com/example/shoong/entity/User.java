@@ -22,7 +22,7 @@ public class User {
     private String name;
 
     @Column(length = 20)
-    private String id; // 로그인 아이디
+    private String loginID; // 로그인 아이디
 
     @Column(length = 100)
     private String password;

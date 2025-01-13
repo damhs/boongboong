@@ -48,7 +48,7 @@ public class UserController {
   @PostMapping("/login")
   public ResponseEntity<UserDTO> login(@Valid @RequestBody UserCreateRequest request) {
     // id와 password를 이용해 로그인 처리
-    UserDTO user = userService.login(request.getId(), request.getPassword());
+    UserDTO user = userService.login(request.getLoginID(), request.getPassword());
     return ResponseEntity.ok(user); // 성공 응답
   }
 
