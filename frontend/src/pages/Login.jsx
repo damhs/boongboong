@@ -17,16 +17,20 @@ const Login = () => {
     e.preventDefault(); // 폼 제출 시 페이지 새로고침 방지
 
     const formData = new URLSearchParams();
-    formData.append('id', id);                   // <-- SecurityConfig에서 .usernameParameter("id")
-    formData.append('password', password);       // <-- .passwordParameter("password")
-    formData.append('remember-me', rememberMe ? "on" : "");
+    formData.append("id", id); // <-- SecurityConfig에서 .usernameParameter("id")
+    formData.append("password", password); // <-- .passwordParameter("password")
+    formData.append("remember-me", rememberMe ? "on" : "");
 
     try {
       console.log("로그인 시도");
-      const response = await axios.post(`${baseUrl}/users/login`, formData, {
-        withCredentials: true,
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      });
+      const response = await axios.post(
+        `${baseUrl}/users/login`,
+        { id, password },
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
       // 로그인 성공 시 홈 화면으로 이동
       if (response.status === 200 || response.status === 302) {
