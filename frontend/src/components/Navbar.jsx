@@ -7,7 +7,7 @@ function Navbar() {
       <h1 style={styles.title}>Traffic Helper</h1>
       <ul style={styles.navList}>
         <li><Link to="/" style={styles.link}>Home</Link></li>
-        <li><Link to="/about" style={styles.link}>About</Link></li>
+        <li><Link to="/search" style={styles.link}>Search</Link></li>
         <li><Link to="/login" style={styles.link}>Login</Link></li>
       </ul>
     </nav>

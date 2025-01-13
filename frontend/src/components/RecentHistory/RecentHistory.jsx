@@ -7,7 +7,7 @@ import PathItem from "./PathItem";
 
 // const baseurl = config.backendUrl;
 
-const RecentHistory = ({ recentPath, recentHistory, onPathDelete, onItemDelete }) => {
+const RecentHistory = ({ recentPath, recentHistory, onPathDelete, onItemDelete, onItemSelect }) => {
   const scrollRef = useRef(null);
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
@@ -65,31 +65,44 @@ const RecentHistory = ({ recentPath, recentHistory, onPathDelete, onItemDelete }
       <div className={styles.title}>최근 내역</div>
 
       {/* 카드 리스트 */}
-      <div 
-        className={styles.cardContainer}
-        ref={scrollRef}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-      >
-        {recentPath.map((path, index) => (
-          <PathItem key={index} path={path} onDelete={() => onPathDelete(path.id)}/>
-        ))}
-      </div>
+      {recentPath && recentPath.length > 0 && (
+        <div 
+          className={styles.cardContainer}
+          ref={scrollRef}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+        >
+          {recentPath.map((path) => (
+            <PathItem 
+              key={path.id} 
+              path={path} 
+              onDelete={() => onPathDelete(path.id)}/>
+          ))}
+        </div>
+      )}
 
       {/* 최근 내역 리스트 */}
-      <div className={styles.listContainer}
-        ref={scrollRef}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-      >
-        {recentHistory.map((item, index) => (
-          <RecentHistoryItem key={index} item={item} onDelete={() => onItemDelete(item.id)} />
-        ))}
-      </div>
+      {recentHistory && recentHistory.length > 0 ? (
+        <div className={styles.listContainer}
+          ref={scrollRef}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+        >
+          {recentHistory.map((item) => (
+            <RecentHistoryItem 
+              key={item.id} 
+              item={item} 
+              onDelete={() => onItemDelete(item.id)}
+              onSelect={() => onItemSelect(item)} />
+          ))}
+        </div>
+      ) : (
+        <p className={styles.noDataMessage}>최근 내역이 없습니다.</p>
+      )}
     </div>
   );
 };

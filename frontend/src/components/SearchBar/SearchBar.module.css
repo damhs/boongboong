@@ -1,11 +1,18 @@
 /* SearchBar.module.css */
 .container {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 8px;
   margin-left: 1vw;
-  margin-right: 1vw;
+  margin-right: 2vw;
   margin-bottom: 16px;
+}
+
+.inputWrapper {
+  flex: 1; /* 입력 필드가 남은 공간 차지 */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .inputContainer {
@@ -27,4 +34,24 @@
   font-size: 20px;
   margin-right: 2vw;
   cursor: pointer;
+}
+
+.navigateButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px; /* 아이콘과 텍스트 간격 */
+  padding: 12px 16px;
+  background-color: var(--dark-green); /* 버튼 배경 */
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--white);
+}
+
+.navigationIcon {
+  width: 30px;
+  height: 30px;
 }

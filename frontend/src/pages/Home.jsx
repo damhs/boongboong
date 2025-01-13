@@ -10,12 +10,12 @@ function Home() {
   const navigate = useNavigate();
 
   const handleButtonClick = () => {
-    navigate('/about');
+    navigate('/search');
   };
 
   return (
     <div style={{ textAlign: 'center'}}>
-      <Map />
+      {/* <Map /> */}
       <TrafficInfo />
       <button className={styles.navigationButton}>
         <NavigationIcon onClick={handleButtonClick}/>
