@@ -36,3 +36,6 @@ out/
 ### VS Code ###
 .vscode/
 shoongkey.pem
+
+application-API-KEY.properties
+application.properties

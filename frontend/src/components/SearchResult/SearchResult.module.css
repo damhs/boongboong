@@ -1,0 +1,57 @@
+.container {
+    margin-bottom: 4vh;
+  }
+  
+  .title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px; /* 라벨 크기 */
+    font-weight: bold; /* 라벨 강조 */
+    color: var(--black);
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    margin-left: 3vw;
+    margin-right: 3vw;
+    margin-bottom: 2vh;
+    border-bottom: 1px solid #ccc; /* 구분선 추가 */
+    padding-bottom: 1vh; /* 구분선과 간격 */
+  }
+  
+  .cardContainer {
+    display: flex;
+    overflow-x: scroll; /* 가로 스크롤 활성화 */
+    margin-left: 3vw;
+    margin-right: 3vw;
+    margin-top: 1vh;
+    gap: 15px;
+  }
+  
+  .cardContainer::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+  }
+  .cardContainer:active {
+    cursor: grabbing; /* 활성 상태에서 커서 변경 */
+  }
+  .cardContainer {
+    scroll-snap-type: x mandatory; /* 스크롤 스냅 설정 */
+  }
+  
+  .listContainer {
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll; /* 가로 스크롤 활성화 */
+    max-height: 40vh;
+    margin: 3vw;
+    gap: 20px;
+  }
+  
+  .listContainer::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+  }
+  .listContainer:active {
+    cursor: grabbing; /* 활성 상태에서 커서 변경 */
+  }
+  .listContainer {
+    scroll-snap-type: x mandatory; /* 스크롤 스냅 설정 */
+  }
+  
