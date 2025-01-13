@@ -73,6 +73,7 @@ function Search() {
     try {
       await axios.delete(`${baseurl}/recents/${itemId}`);
       setRecentHistory((prevHistory) => prevHistory.filter((item) => item.id !== itemId));
+      console.log("항목 삭제 완료:", itemId);
     } catch (error) {
       console.error("최근 내역 삭제 중 오류 발생:", error);
     }
@@ -183,9 +184,9 @@ function Search() {
 
     try {
       const response = await axios.post(`${baseurl}/paths`, {
-        userID,
-        originID: departure,
-        destinationID: arrival,
+        userID: userID,
+        originID: departure.placeID,
+        destinationID: arrival.placeID,
       });
       console.log("최단 경로:", response.data);
     } catch (error) {

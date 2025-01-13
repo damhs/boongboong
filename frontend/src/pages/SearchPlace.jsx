@@ -104,6 +104,7 @@ function SearchPlace() {
     console.log("SELECTED PLACE", selectedPlace)
     const { latitude, longitude } = await fetchCoordinates(selectedPlace.roadAddress, selectedPlace.title);
     try {
+      // place 추가가
       const response = await axios.post(`${baseurl}/places`, {
         placeType: "SPOT",
         placeName: stripHtmlTags(selectedPlace.title),
@@ -114,6 +115,12 @@ function SearchPlace() {
 
       const addedPlace = response.data;
       console.log("추가된 장소:", addedPlace);
+
+      // recents에 추가
+      await axios.post(`${baseurl}/recents`, {
+        userID: userID,
+        placeID: addedPlace.placeID
+      });
 
       // localStorage에 저장
       if (placeType === "departure") {
