@@ -8,7 +8,7 @@ import lombok.Setter;
 import java.time.LocalTime;
 
 @Entity
-@Table(name = "Segment")  // DB 테이블이 "Segment" 이므로 지정
+@Table(name = "Segment") // DB 테이블이 "Segment" 이므로 지정
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,5 +28,8 @@ public class Segment {
 
   private Integer distance;
 
-  private LocalTime duration;    // TIME => LocalTime으로 매핑
+  private LocalTime duration; // TIME => LocalTime으로 매핑
+
+  @Column(length = 2)
+  private String direction;
 }

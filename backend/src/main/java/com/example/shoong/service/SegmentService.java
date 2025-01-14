@@ -19,94 +19,136 @@ import java.util.Map;
 @Service
 public class SegmentService {
 
-    private final SegmentRepository segmentRepository;
-    private final PathRepository pathRepository;
+  private final SegmentRepository segmentRepository;
+  private final PathRepository pathRepository;
 
-    public SegmentService(SegmentRepository segmentRepository, PathRepository pathRepository) {
-        this.segmentRepository = segmentRepository;
-        this.pathRepository = pathRepository;
+  public SegmentService(SegmentRepository segmentRepository, PathRepository pathRepository) {
+    this.segmentRepository = segmentRepository;
+    this.pathRepository = pathRepository;
+  }
+
+  @Transactional
+  public void saveSegments(Path path, List<Object> guides, List<List<Double>> paths) {
+    for (int i = 0; i < guides.size(); i++) {
+      @SuppressWarnings("unchecked")
+      Map<String, Object> step = (Map<String, Object>) guides.get(i);
+
+      // 방위 계산을 위한 좌표 가져오기
+      String direction = null;
+      if (i < paths.size() - 1) {
+        List<Double> currentPoint = paths.get(i);
+        List<Double> nextPoint = paths.get(i + 1);
+
+        double angle = calculateDirection(
+            currentPoint.get(1), currentPoint.get(0), // 현재 지점 (lat1, lon1)
+            nextPoint.get(1), nextPoint.get(0) // 다음 지점 (lat2, lon2)
+        );
+        direction = getDirectionFromAngle(angle);
+      }
+
+      // Segment 생성 및 저장
+      Segment segment = new Segment();
+      segment.setSegmentID(UUID.randomUUID().toString());
+      segment.setPath(path);
+      segment.setSequenceNumber(i + 1);
+      segment.setDescription((String) step.get("instructions"));
+      segment.setDistance((Integer) step.get("distance"));
+      segment.setDuration(LocalTime.ofSecondOfDay(((Number) step.get("duration")).longValue()));
+      segment.setDirection(direction);
+
+      segmentRepository.save(segment);
     }
+  }
 
-    @Transactional
-    public void saveSegments(Path path, List<Object> guides, List<List<Double>> paths) {
-        for (int i = 0; i < guides.size(); i++) {
-            Object guide = guides.get(i);
-            if (guide instanceof Map) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> step = (Map<String, Object>) guide;
+  private Double calculateDirection(double lat1, double lon1, double lat2, double lon2) {
+    double deltaLon = Math.toRadians(lon2 - lon1);
+    double y = Math.sin(deltaLon) * Math.cos(Math.toRadians(lat2));
+    double x = Math.cos(Math.toRadians(lat1)) * Math.sin(Math.toRadians(lat2)) -
+        Math.sin(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.cos(deltaLon);
+    double theta = Math.atan2(y, x);
+    double direction = Math.toDegrees(theta);
 
-                Integer sequenceNumber = i + 1;
-                String description = (String) step.get("instructions");
-                Integer distance = (Integer) step.get("distance");
-                Long durationSeconds = ((Number) step.get("duration")).longValue();
-                LocalTime duration = LocalTime.ofSecondOfDay(durationSeconds);
+    // 0~360도로 변환
+    return (direction + 360) % 360;
+  }
 
-                Segment segment = new Segment();
-                segment.setSegmentID(UUID.randomUUID().toString());
-                segment.setPath(path);
-                segment.setSequenceNumber(sequenceNumber);
-                segment.setDescription(description);
-                segment.setDistance(distance);
-                segment.setDuration(duration);
-
-                segmentRepository.save(segment);
-            }
-        }
+  private String getDirectionFromAngle(double angle) {
+    if (angle >= 337.5 || angle < 22.5) {
+        return "nt"; // North
+    } else if (angle >= 22.5 && angle < 67.5) {
+        return "ne"; // North-East
+    } else if (angle >= 67.5 && angle < 112.5) {
+        return "et"; // East
+    } else if (angle >= 112.5 && angle < 157.5) {
+        return "se"; // South-East
+    } else if (angle >= 157.5 && angle < 202.5) {
+        return "st"; // South
+    } else if (angle >= 202.5 && angle < 247.5) {
+        return "sw"; // South-West
+    } else if (angle >= 247.5 && angle < 292.5) {
+        return "wt"; // West
+    } else {
+        return "nw"; // North-West
     }
+}
 
-    @Transactional
-    public SegmentDTO createSegment(SegmentCreateRequest request) {
-        Path path = pathRepository.findById(request.getPathID())
-            .orElseThrow(() -> new ResourceNotFoundException("경로가 없습니다. ID=" + request.getPathID()));
+  @Transactional
+  public SegmentDTO createSegment(SegmentCreateRequest request) {
+    Path path = pathRepository.findById(request.getPathID())
+        .orElseThrow(() -> new ResourceNotFoundException("경로가 없습니다. ID=" + request.getPathID()));
 
-        Segment seg = new Segment();
-        seg.setSegmentID(UUID.randomUUID().toString());
-        seg.setPath(path);
-        seg.setSequenceNumber(request.getSequenceNumber());
-        seg.setDescription(request.getDescription());
-        seg.setDistance(request.getDistance());
-        seg.setDuration(request.getDuration());
+    Segment seg = new Segment();
+    seg.setSegmentID(UUID.randomUUID().toString());
+    seg.setPath(path);
+    seg.setSequenceNumber(request.getSequenceNumber());
+    seg.setDescription(request.getDescription());
+    seg.setDistance(request.getDistance());
+    seg.setDuration(request.getDuration());
 
-        Segment saved = segmentRepository.save(seg);
-        return toDTO(saved);
+    Segment saved = segmentRepository.save(seg);
+    return toDTO(saved);
+  }
+
+  @Transactional(readOnly = true)
+  public SegmentDTO getSegment(String segmentID) {
+    Segment seg = segmentRepository.findById(segmentID)
+        .orElseThrow(() -> new ResourceNotFoundException("세그먼트를 찾을 수 없습니다. ID=" + segmentID));
+    return toDTO(seg);
+  }
+
+  @Transactional
+  public SegmentDTO updateSegment(String segmentID, SegmentUpdateRequest request) {
+    Segment seg = segmentRepository.findById(segmentID)
+        .orElseThrow(() -> new ResourceNotFoundException("세그먼트를 찾을 수 없습니다. ID=" + segmentID));
+
+    if (request.getSequenceNumber() != null)
+      seg.setSequenceNumber(request.getSequenceNumber());
+    if (request.getDescription() != null)
+      seg.setDescription(request.getDescription());
+    if (request.getDistance() != null)
+      seg.setDistance(request.getDistance());
+    if (request.getDuration() != null)
+      seg.setDuration(request.getDuration());
+
+    return toDTO(seg);
+  }
+
+  @Transactional
+  public void deleteSegment(String segmentID) {
+    if (!segmentRepository.existsById(segmentID)) {
+      throw new ResourceNotFoundException("해당 세그먼트가 없습니다. ID=" + segmentID);
     }
+    segmentRepository.deleteById(segmentID);
+  }
 
-    @Transactional(readOnly = true)
-    public SegmentDTO getSegment(String segmentID) {
-        Segment seg = segmentRepository.findById(segmentID)
-            .orElseThrow(() -> new ResourceNotFoundException("세그먼트를 찾을 수 없습니다. ID=" + segmentID));
-        return toDTO(seg);
-    }
-
-    @Transactional
-    public SegmentDTO updateSegment(String segmentID, SegmentUpdateRequest request) {
-        Segment seg = segmentRepository.findById(segmentID)
-            .orElseThrow(() -> new ResourceNotFoundException("세그먼트를 찾을 수 없습니다. ID=" + segmentID));
-
-        if (request.getSequenceNumber() != null) seg.setSequenceNumber(request.getSequenceNumber());
-        if (request.getDescription() != null) seg.setDescription(request.getDescription());
-        if (request.getDistance() != null) seg.setDistance(request.getDistance());
-        if (request.getDuration() != null) seg.setDuration(request.getDuration());
-
-        return toDTO(seg);
-    }
-
-    @Transactional
-    public void deleteSegment(String segmentID) {
-        if(!segmentRepository.existsById(segmentID)) {
-            throw new ResourceNotFoundException("해당 세그먼트가 없습니다. ID=" + segmentID);
-        }
-        segmentRepository.deleteById(segmentID);
-    }
-
-    private SegmentDTO toDTO(Segment seg) {
-        SegmentDTO dto = new SegmentDTO();
-        dto.setSegmentID(seg.getSegmentID());
-        dto.setPathID(seg.getPath().getPathID());
-        dto.setSequenceNumber(seg.getSequenceNumber());
-        dto.setDescription(seg.getDescription());
-        dto.setDistance(seg.getDistance());
-        dto.setDuration(seg.getDuration() == null ? null : seg.getDuration().toString());
-        return dto;
-    }
+  private SegmentDTO toDTO(Segment seg) {
+    SegmentDTO dto = new SegmentDTO();
+    dto.setSegmentID(seg.getSegmentID());
+    dto.setPathID(seg.getPath().getPathID());
+    dto.setSequenceNumber(seg.getSequenceNumber());
+    dto.setDescription(seg.getDescription());
+    dto.setDistance(seg.getDistance());
+    dto.setDuration(seg.getDuration() == null ? null : seg.getDuration().toString());
+    return dto;
+  }
 }
