@@ -1,139 +1,89 @@
 // src/components/Map.jsx
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from "react";
 
 function Map() {
-  const mapRef = useRef(null);
-  const mapInstanceRef = useRef(null);
-  const carMarkerRef = useRef(null); // 차량 마커를 저장할 ref
-  const carIconUrl = "차량아이콘.png"; // 차량 아이콘 이미지 경로
+  const mapRef = useRef(null); // 지도 div에 접근하기 위한 ref
+  const mapInstanceRef = useRef(null); // Tmap 인스턴스를 저장할 ref
 
   useEffect(() => {
-    // 지도 초기화 함수
-    const initMap = (lat, lng) => {
-      if (window.naver?.maps) {
-        const mapOptions = {
-          center: new window.naver.maps.LatLng(lat, lng),
-          zoom: 16, // 네비게이션 느낌을 위한 확대 레벨
-        };
-        mapInstanceRef.current = new window.naver.maps.Map(mapRef.current, mapOptions);
+    // Tmap SDK 스크립트를 동적으로 로드하는 함수
+    const loadTmapScript = () => {
+      return new Promise((resolve, reject) => {
+        // 이미 Tmapv2가 로드되어 있다면 바로 resolve
+        if (window.Tmapv2) {
+          resolve();
+          return;
+        }
 
-        // 차량 마커 초기화
-        carMarkerRef.current = new window.naver.maps.CustomOverlay({
-          position: new window.naver.maps.LatLng(lat, lng),
-          content: `
-            <div id="carIcon" style="
-              width: 32px; 
-              height: 32px; 
-              background: url('${carIconUrl}') no-repeat center; 
-              background-size: contain;
-              transform: rotate(0deg);
-            "></div>
-          `,
-          zIndex: 1,
-          map: mapInstanceRef.current,
-        });
-      }
-    };
+        // Tmapv2 스크립트 태그 생성
+        const script = document.createElement("script");
+        script.src = "https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=API-KEY"; // 실제 API 키로 교체
+        script.async = true;
 
-    // 사용자 위치를 얻는 함수
-    const getUserLocation = () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            initMap(latitude, longitude);  // 지도 초기화
-            // 실시간 차량 위치 업데이트 시작
-            startRealtimeUpdates(latitude, longitude);
-          },
-          (error) => {
-            console.error('Error getting location:', error);
-            // 위치 가져오기 실패 시, 기본 좌표(예: 서울시청)로 설정
-            initMap(37.5666102, 126.9783881);
-            // 실시간 차량 위치 업데이트 시작 (기본 위치)
-            startRealtimeUpdates(37.5666102, 126.9783881);
-          },
-          {
-            enableHighAccuracy: false,
-            timeout: 5000,
-            maximumAge: 0
+        // 스크립트 로드 성공 시
+        script.onload = () => {
+          if (window.Tmapv2) {
+            resolve();
+          } else {
+            reject(new Error("Tmapv2 라이브러리가 로드되지 않았습니다."));
           }
-        );
-      } else {
-        // Geolocation을 지원하지 않는 브라우저인 경우
-        console.warn('Geolocation is not supported by this browser.');
-        initMap(37.5666102, 126.9783881);
-        // 실시간 차량 위치 업데이트 시작 (기본 위치)
-        startRealtimeUpdates(37.5666102, 126.9783881);
+        };
+
+        // 스크립트 로드 실패 시
+        script.onerror = () => {
+          reject(new Error("Tmapv2 스크립트 로드 실패"));
+        };
+
+        // head에 스크립트 태그 추가
+        document.head.appendChild(script);
+      });
+    };
+
+    // Tmap 초기화 함수
+    const initTmap = () => {
+      const { Tmapv2 } = window;
+
+      if (!Tmapv2) {
+        console.error("Tmapv2 라이브러리가 로드되지 않았습니다.");
+        return;
       }
+
+      const defaultLat = 37.566481622437934;
+      const defaultLng = 126.98502302169841;
+
+      // 지도 초기화
+      const mapDiv = document.getElementById('map_div');
+
+      // map_div가 이미 존재하면 초기화하지 않음
+      if (!mapDiv.firstChild) {
+        mapInstanceRef.current = new Tmapv2.Map(mapRef.current, {
+          center: new Tmapv2.LatLng(defaultLat, defaultLng),
+          width: "100%",
+          height: "600px",
+          zoom: 15,
+          pitch: 45, // 지도 기울기 설정 (tilt)
+      })};
     };
 
-    // 실시간 차량 위치 업데이트 함수 (WebSocket 사용 예시)
-    const startRealtimeUpdates = (initialLat, initialLng) => {
-      // WebSocket 연결 설정 (실제 서버 주소로 변경 필요)
-      const socket = new WebSocket('wss://your-websocket-server.com');
+    // 스크립트 로드 후 지도 초기화
+    loadTmapScript()
+      .then(() => {
+        initTmap();
+      })
+      .catch((error) => {
+        console.error(error.message);
+      });
 
-      socket.onopen = () => {
-        console.log('WebSocket connection established');
-        // 필요 시 서버에 초기 데이터 요청
-      };
-
-      socket.onmessage = (event) => {
-        // 서버로부터 차량 위치 데이터 수신 (예: JSON 형식)
-        try {
-          const data = JSON.parse(event.data);
-          const { latitude, longitude, heading } = data;
-
-          updateCarPosition(latitude, longitude, heading);
-        } catch (err) {
-          console.error('Error parsing WebSocket message:', err);
-        }
-      };
-
-      socket.onerror = (error) => {
-        console.error('WebSocket error:', error);
-      };
-
-      socket.onclose = () => {
-        console.log('WebSocket connection closed');
-        // 재연결 로직 추가 가능
-      };
-    };
-
-    // 차량 위치 및 헤딩 업데이트 함수
-    const updateCarPosition = (lat, lng, heading) => {
-      if (mapInstanceRef.current && carMarkerRef.current) {
-        const newPosition = new window.naver.maps.LatLng(lat, lng);
-
-        // 지도 중심 이동
-        mapInstanceRef.current.setCenter(newPosition);
-
-        // 차량 마커 위치 업데이트
-        carMarkerRef.current.setPosition(newPosition);
-
-        // 차량 아이콘 회전
-        const carIconEl = document.getElementById("carIcon");
-        if (carIconEl) {
-          carIconEl.style.transform = `rotate(${heading}deg)`;
-        }
-      }
-    };
-
-    // 실제 위치 정보 가져오기 및 지도 초기화
-    getUserLocation();
-
-    // 컴포넌트 언마운트 시 WebSocket 연결 종료
+    // Cleanup 함수 (필요 시 추가)
     return () => {
-      // WebSocket 연결 종료 로직 필요
-      // 예: socket.close();
+      // 예: 지도 인스턴스 정리 등
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.dispose(); // Tmapv2에서는 dispose 메서드가 있을 수 있습니다. 공식 문서 참고.
+      }
     };
   }, []);
 
-  return (
-    <div
-      ref={mapRef}
-      style={{ width: '100%', height: '600px' }}
-    ></div>
-  );
+  return <div id="map_div" ref={mapRef} style={{ width: "100%", height: "600px" }} />;
 }
 
 export default Map;
