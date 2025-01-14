@@ -33,6 +33,13 @@ public class PathController {
         return ResponseEntity.ok(dto);
     }
 
+    // [GET] /paths/{userID}/recents
+    @GetMapping("/{userID}/recents")
+    public ResponseEntity<PathDTO> getRecentPaths(@PathVariable String userID) {
+        PathDTO dto = pathService.getPath(userID);
+        return ResponseEntity.ok(dto);
+    }
+
     // [PUT] /paths/{pathID}
     @PutMapping("/{pathID}")
     public ResponseEntity<PathDTO> updatePath(

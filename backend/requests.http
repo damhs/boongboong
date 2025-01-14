@@ -71,3 +71,6 @@ POST http://localhost:8080/api/paths HTTP/1.1
   "totalDistance": 0,
   "totalTime": "string"
 }
+
+### 
+GET http://localhost:8080/api/paths/1efd1a4b-706a-6e71-a44d-e7b1f23b2697 HTTP/1.1

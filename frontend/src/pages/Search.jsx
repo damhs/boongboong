@@ -154,25 +154,6 @@ function Search() {
     });
   };
 
-  // const fetchCoordinates = async (address, type) => {
-  //   window.naver.maps.Service.geocode(
-  //     {query: address},
-  //     (status, response) => {
-  //       if (status !== window.naver.maps.Service.Status.OK) {
-  //         console.error(`${type} 좌표 변환 실패: ${status}`);
-  //         return;
-  //       }
-
-  //       const item = response.v2.addresses[0];
-  //       if (!item) {
-  //         console.error(`${type} 좌표를 찾을 수 없습니다.`);
-  //         return;
-  //       }
-
-  //       console.log(`${type} 좌표: 위도(${item.y}), 경도(${item.x})`);
-  //     }
-  //   );
-  // };
   const addPath = async () => {
     // path 등록
     try {
