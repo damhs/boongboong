@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/paths")
@@ -35,9 +36,9 @@ public class PathController {
 
     // [GET] /paths/{userID}/recents
     @GetMapping("/{userID}/recents")
-    public ResponseEntity<PathDTO> getRecentPaths(@PathVariable String userID) {
-        PathDTO dto = pathService.getPath(userID);
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<List<PathDTO>> getRecentPaths(@PathVariable String userID) {
+        List<PathDTO> dtoList = pathService.getRecentPaths(userID);
+        return ResponseEntity.ok(dtoList);
     }
 
     // [PUT] /paths/{pathID}
