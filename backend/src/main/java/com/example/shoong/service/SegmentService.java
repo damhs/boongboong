@@ -11,7 +11,10 @@ import com.example.shoong.repository.SegmentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
 import java.util.UUID;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class SegmentService {
@@ -22,6 +25,33 @@ public class SegmentService {
     public SegmentService(SegmentRepository segmentRepository, PathRepository pathRepository) {
         this.segmentRepository = segmentRepository;
         this.pathRepository = pathRepository;
+    }
+
+    @Transactional
+    public void saveSegments(Path path, List<Object> guides, List<List<Double>> paths) {
+        for (int i = 0; i < guides.size(); i++) {
+            Object guide = guides.get(i);
+            if (guide instanceof Map) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> step = (Map<String, Object>) guide;
+
+                Integer sequenceNumber = i + 1;
+                String description = (String) step.get("instructions");
+                Integer distance = (Integer) step.get("distance");
+                Long durationSeconds = ((Number) step.get("duration")).longValue();
+                LocalTime duration = LocalTime.ofSecondOfDay(durationSeconds);
+
+                Segment segment = new Segment();
+                segment.setSegmentID(UUID.randomUUID().toString());
+                segment.setPath(path);
+                segment.setSequenceNumber(sequenceNumber);
+                segment.setDescription(description);
+                segment.setDistance(distance);
+                segment.setDuration(duration);
+
+                segmentRepository.save(segment);
+            }
+        }
     }
 
     @Transactional
