@@ -11,7 +11,7 @@ const Signup = () => {
   const navigate = useNavigate();
 
   // 각 인풋값을 저장할 상태
-  const [id, setid] = useState("");
+  const [loginID, setLoginID] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
 
@@ -29,7 +29,7 @@ const Signup = () => {
       console.log("회원가입 요청");
 
       const response = await axios.post(`${baseUrl}/users`, {
-        id,
+        loginID,
         password,
       });
 
@@ -56,8 +56,8 @@ const Signup = () => {
           type="text"
           placeholder="아이디"
           className={styles.input}
-          value={id}
-          onChange={(e) => setid(e.target.value)}
+          value={loginID}
+          onChange={(e) => setLoginID(e.target.value)}
         />
         <input
           type="password"

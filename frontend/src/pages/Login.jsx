@@ -8,7 +8,7 @@ import config from "../config";
 const baseUrl = config.backendUrl;
 
 const Login = () => {
-  const [id, setId] = useState("");
+  const [loginID, setLoginID] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
@@ -17,15 +17,15 @@ const Login = () => {
     e.preventDefault(); // 폼 제출 시 페이지 새로고침 방지
 
     const formData = new URLSearchParams();
-    formData.append("id", id); // <-- SecurityConfig에서 .usernameParameter("id")
+    formData.append("loginID", loginID); // <-- SecurityConfig에서 .usernameParameter("loginID")
     formData.append("password", password); // <-- .passwordParameter("password")
     formData.append("remember-me", rememberMe ? "on" : "");
 
     try {
       console.log("로그인 시도");
       const response = await axios.post(
-        `${baseUrl}/users/login`,
-        { id, password },
+        `${baseUrl}/auth/login`,
+        { loginID, password },
         {
           withCredentials: true,
           headers: { "Content-Type": "application/json" },
@@ -56,8 +56,8 @@ const Login = () => {
           type="text"
           placeholder="아이디"
           className={styles.input}
-          value={id}
-          onChange={(e) => setId(e.target.value)}
+          value={loginID}
+          onChange={(e) => setLoginID(e.target.value)}
         />
         <input
           type="password"
