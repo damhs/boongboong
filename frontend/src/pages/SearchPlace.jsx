@@ -49,7 +49,7 @@ function SearchPlace() {
 
   const handleSearch = async () => {
     try{
-      const response = await axios.get('/api/search', {
+      const response = await axios.get('/api/search-place', {
         params: {
           text: searchInput
         }
@@ -104,7 +104,7 @@ function SearchPlace() {
     console.log("SELECTED PLACE", selectedPlace)
     const { latitude, longitude } = await fetchCoordinates(selectedPlace.roadAddress, selectedPlace.title);
     try {
-      // place 추가가
+      // place 추가
       const response = await axios.post(`${baseurl}/places`, {
         placeType: "SPOT",
         placeName: stripHtmlTags(selectedPlace.title),

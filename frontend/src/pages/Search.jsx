@@ -173,6 +173,34 @@ function Search() {
   //     }
   //   );
   // };
+  const addPath = async () => {
+    // path 등록
+    try {
+      const response = await axios.post(`${baseurl}/paths`, {
+        userID: userID,
+        originID: departure.placeID,
+        destinationID: arrival.placeID,
+      });
+      console.log("경로가 등록되었습니다:", response.data);
+    } catch (error) {
+      console.error("경로 등록 중 오류 발생:", error);
+    } 
+
+    // origin과 destination의 좌표 가져오기
+    try {
+      const start_response = await axios.get(`${baseurl}/places/${departure.placeID}`);
+      const start_latitude = start_response.data.latitude;
+      const start_longitude = start_response.data.longitude;
+
+      const goal_response = await axios.get(`${baseurl}/places/${arrival.placeID}`);
+      const goal_latitude = goal_response.data.latitude;
+      const goal_longitude = goal_response.data.longitude;
+
+      return { start_latitude, start_longitude, goal_latitude, goal_longitude };
+    } catch (error) {
+      console.error("좌표를 가져오는 중 오류 발생:", error);
+    }
+  }
 
   const handleFindPath = async () => {
     if (!departure || !arrival) {
@@ -181,23 +209,46 @@ function Search() {
     }
 
     console.log("길찾기를 시작합니다...");
+    
+    const { start_latitude, start_longitude, goal_latitude, goal_longitude } = await addPath();
+    console.log("좌표:", start_latitude, start_longitude, goal_latitude, goal_longitude);
 
     try {
-      const response = await axios.post(`${baseurl}/paths`, {
-        userID: userID,
-        originID: departure.placeID,
-        destinationID: arrival.placeID,
+      const response = await axios.get(`/api/search-path`, {
+        params: {
+          start: start_longitude + ", " + start_latitude,
+          goal: goal_longitude + ", " + goal_latitude
+        }
       });
-      console.log("최단 경로:", response.data);
+
+      const guide = response.data;
+
+      if (guide.route && guide.route.traoptimal && guide.route.traoptimal.length > 0) {
+        const guides = guide.route.traoptimal[0].guide;
+        const paths = guide.route.traoptimal[0].path;
+
+        if (guides && guides.length > 0 && Array.isArray(paths)) {
+          guides.forEach((step, index) => {
+            if (step.instructions && typeof step.pointIndex === "number") {
+              if (step.pointIndex >= 0 && step.pointIndex < paths.length) {
+                console.log(`Step ${index + 1}: ${step.instructions} (${paths[step.pointIndex][0]}, ${paths[step.pointIndex][1]})`);
+              } else {
+                console.log(`Step ${index + 1}: ${step.instructions} (잘못된 좌표 데이터)`);
+              }
+            } else {
+              console.log(`Step ${index + 1}: 데이터 누락`);
+            }
+          });
+        } else {
+          console.log("길 안내 데이터가 없습니다.");
+        }
+      } else {
+        console.log("경로 데이터가 없습니다.");
+      }
     } catch (error) {
-      console.error("경로 찾기 중 오류 발생:", error);
-    } 
-
-
-    // departure/arrival이 객체인 경우, .name 처럼 주소 필드를 꺼내서 사용해야 할 수도 있음
-    // 아래 예시에서는 그냥 departure/arrival을 문자열 주소라 가정
-    // await fetchCoordinates(departure, "출발지");
-    // await fetchCoordinates(arrival, "도착지");
+      console.error("경로를 찾는 중 오류 발생:", error);
+    }
+    // 
   };
 
   return (

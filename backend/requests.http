@@ -25,8 +25,8 @@ Content-Type: application/json
 
 GET http://localhost:8080/api/users HTTP/1.1
 
-### 모든 장소 조회
-GET http://localhost:8080/api/places HTTP/1.1
+### 특정 장소 조회
+GET http://localhost:8080/api/places/ab1736c1-13c9-4df9-8440-4bf0ccb2a263 HTTP/1.1
 
 ### 장소 생성
 POST http://localhost:8080/api/places HTTP/1.1
@@ -60,4 +60,14 @@ Content-Type: application/json
   "userID": "1efd1a4b-706a-6e71-a44d-e7b1f23b2697",
   "placeID": "ab1736c1-13c9-4df9-8440-4bf0ccb2a263",
   "favoriteName": "기숙사"
+}
+
+###
+POST http://localhost:8080/api/paths HTTP/1.1
+{
+  "userID": "string",
+  "originID": "string",
+  "destinationID": "string",
+  "totalDistance": 0,
+  "totalTime": "string"
 }

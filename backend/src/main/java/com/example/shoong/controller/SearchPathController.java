@@ -14,29 +14,29 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping("/api/search-place")
-public class SearchPlaceController {
-    @Value("${naver.client-id}")
+@RequestMapping("/api/search-path")
+public class SearchPathController {
+    @Value("${naver.map-client-id}")
     private String clientId;
 
-    @Value("${naver.client-secret}")
+    @Value("${naver.map-client-secret}")
     private String clientSecret;
 
     @GetMapping
-    public ResponseEntity<String> search(@RequestParam String text) {
+    public ResponseEntity<String> search(@RequestParam String start, @RequestParam String goal) {
         URI uri = UriComponentsBuilder
-            .fromUriString("https://openapi.naver.com")
-            .path("/v1/search/local.json")
-            .queryParam("query", text)
-            .queryParam("display", 5)
+            .fromUriString("https://naveropenapi.apigw.ntruss.com")
+            .path("/map-direction/v1/driving")
+            .queryParam("goal", goal)
+            .queryParam("start", start)
             .encode(Charset.forName("UTF-8"))
             .build()
             .toUri();
         
         RequestEntity<Void> req = RequestEntity
                 .get(uri)
-                .header("X-Naver-Client-Id", clientId)
-                .header("X-Naver-Client-Secret", clientSecret)
+                .header("x-ncp-apigw-api-key-id", clientId)
+                .header("x-ncp-apigw-api-key", clientSecret)
                 .header("Content-Type", "application/json; charset=UTF-8")
                 .build();
         
