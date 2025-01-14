@@ -32,8 +32,6 @@ public class LightService {
         Light light = new Light();
         light.setLightID(UUID.randomUUID().toString());
         light.setPlace(place);
-        light.setStatus(request.getStatus());
-        light.setRemainTime(request.getRemainTime());
 
         Light saved = lightRepository.save(light);
         return toDTO(saved);
@@ -46,19 +44,19 @@ public class LightService {
         return toDTO(light);
     }
 
-    @Transactional
-    public LightDTO updateLight(String lightID, LightUpdateRequest request) {
-        Light light = lightRepository.findById(lightID)
-            .orElseThrow(() -> new ResourceNotFoundException("신호등이 없습니다. ID=" + lightID));
+    // @Transactional
+    // public LightDTO updateLight(String lightID, LightUpdateRequest request) {
+    //     Light light = lightRepository.findById(lightID)
+    //         .orElseThrow(() -> new ResourceNotFoundException("신호등이 없습니다. ID=" + lightID));
 
-        if (request.getStatus() != null) {
-            light.setStatus(request.getStatus());
-        }
-        if (request.getRemainTime() != null) {
-            light.setRemainTime(request.getRemainTime());
-        }
-        return toDTO(light);
-    }
+    //     if (request.getStatus() != null) {
+    //         light.setStatus(request.getStatus());
+    //     }
+    //     if (request.getRemainTime() != null) {
+    //         light.setRemainTime(request.getRemainTime());
+    //     }
+    //     return toDTO(light);
+    // }
 
     @Transactional
     public void deleteLight(String lightID) {
@@ -72,8 +70,6 @@ public class LightService {
         LightDTO dto = new LightDTO();
         dto.setLightID(light.getLightID());
         dto.setPlaceID(light.getPlace().getPlaceID());
-        dto.setStatus(light.getStatus());
-        dto.setRemainTime(light.getRemainTime() == null ? null : light.getRemainTime().toString());
         return dto;
     }
 }

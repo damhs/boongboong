@@ -20,7 +20,6 @@ public class PathLight {
     @JoinColumn(name = "pathID")
     private Path path;
 
-    // DB 컬럼이 lightID2 이므로 따로 설정
     @ManyToOne
     @JoinColumn(name = "lightID")
     private Light light;

@@ -2,7 +2,6 @@ package com.example.shoong.controller;
 
 import com.example.shoong.dto.light.LightCreateRequest;
 import com.example.shoong.dto.light.LightDTO;
-import com.example.shoong.dto.light.LightUpdateRequest;
 import com.example.shoong.service.LightService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,15 +32,15 @@ public class LightController {
         return ResponseEntity.ok(dto);
     }
 
-    // [PUT] /lights/{lightID}
-    @PutMapping("/{lightID}")
-    public ResponseEntity<LightDTO> updateLight(
-            @PathVariable String lightID,
-            @Valid @RequestBody LightUpdateRequest request
-    ) {
-        LightDTO updated = lightService.updateLight(lightID, request);
-        return ResponseEntity.ok(updated);
-    }
+    // // [PUT] /lights/{lightID}
+    // @PutMapping("/{lightID}")
+    // public ResponseEntity<LightDTO> updateLight(
+    //         @PathVariable String lightID,
+    //         @Valid @RequestBody LightUpdateRequest request
+    // ) {
+    //     LightDTO updated = lightService.updateLight(lightID, request);
+    //     return ResponseEntity.ok(updated);
+    // }
 
     // [DELETE] /lights/{lightID}
     @DeleteMapping("/{lightID}")

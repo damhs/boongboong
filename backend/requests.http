@@ -72,5 +72,5 @@ POST http://localhost:8080/api/paths HTTP/1.1
   "totalTime": "string"
 }
 
-### 
-GET http://localhost:8080/api/paths/1efd1a4b-706a-6e71-a44d-e7b1f23b2697 HTTP/1.1
+###
+GET http://localhost:8080/api/paths/1efd241d-46e3-6f36-9c66-0f2a18e8923f/recents HTTP/1.1
