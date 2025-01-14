@@ -102,35 +102,71 @@ function SearchPlace() {
   const handleSelect = async (selectedPlace) => {
     // 출발지 또는 도착지 여부를 함께 전달
     console.log("SELECTED PLACE", selectedPlace)
-    const { latitude, longitude } = await fetchCoordinates(selectedPlace.roadAddress, selectedPlace.title);
+    const title = stripHtmlTags(selectedPlace.title);
     try {
-      // place 추가
-      const response = await axios.post(`${baseurl}/places`, {
-        placeType: "SPOT",
-        placeName: stripHtmlTags(selectedPlace.title),
-        latitude : latitude,
-        longitude : longitude,
-        etc: stripHtmlTags(selectedPlace.roadAddress)
-      });
+      const places = await axios.get(`${baseurl}/places`);
+      var existingPlace = places.data.find((place) => place.placeName === title);
+      if (existingPlace) {
+        console.log("이미 추가된 장소입니다.: ", existingPlace);
+      }
+      else {
+        const { latitude, longitude } = await fetchCoordinates(selectedPlace.roadAddress, selectedPlace.title);
 
-      const addedPlace = response.data;
-      console.log("추가된 장소:", addedPlace);
+        // place 추가
+        const response = await axios.post(`${baseurl}/places`, {
+          placeType: "SPOT",
+          placeName: stripHtmlTags(selectedPlace.title),
+          latitude : latitude,
+          longitude : longitude,
+          etc: stripHtmlTags(selectedPlace.roadAddress)
+        });
 
+        existingPlace = response.data;
+        console.log("추가된 장소:", existingPlace);
+      }
+
+      const recents = await axios.get(`${baseurl}/recents/${userID}`);
+      var recentEntry = recents.data.find((recent) => recent.placeID === existingPlace.placeID);
+
+      if (recentEntry) {
+        const recentID = recentEntry.recentID;
+        const putInfo = await axios.delete(`${baseurl}/recents/${recentID}`);
+        console.log(`최근 내역 삭제 완료: ${putInfo.data}`);
+      }
+    
       // recents에 추가
-      await axios.post(`${baseurl}/recents`, {
+      const postInfo = await axios.post(`${baseurl}/recents`, {
         userID: userID,
-        placeID: addedPlace.placeID
+        placeID: existingPlace.placeID
       });
+      console.log(`최근 내역 추가 완료: ${postInfo.data}`);
+    
+  
+      // if (recents.data.some((recent) => recent.placeID === selectedPlace.placeID)) {
+      //   const recentID = recents.data.find((recent) => recent.placeID === selectedPlace.placeID).recentID;
+      //   const putInfo = await axios.put(`${baseurl}/recents/${recentID}`, {
+      //     createdAt: new Date().toISOString()
+      //   });
+      //   console.log(`최근 내역 갱신 완료: ${putInfo.data}`);
+      // } else {
+      //   // recents에 추가
+      //   const postInfo = await axios.post(`${baseurl}/recents`, {
+      //     userID: userID,
+      //     placeID: selectedPlace.placeID
+      //   });
+      //   console.log(`최근 내역 추가 완료: ${postInfo.data}`);
+      // };
+
 
       // localStorage에 저장
       if (placeType === "departure") {
-        localStorage.setItem("departure", JSON.stringify(addedPlace));
+        localStorage.setItem("departure", JSON.stringify(existingPlace));
       } else if (placeType === "arrival") {
-        localStorage.setItem("arrival", JSON.stringify(addedPlace));
+        localStorage.setItem("arrival", JSON.stringify(existingPlace));
       }
 
       navigate("/search", {
-        state: { addedPlace, placeType: placeType }, // "departure" 또는 "arrival" 설정
+        state: { existingPlace, placeType: placeType }, // "departure" 또는 "arrival" 설정
       });
     } catch (error) {
       console.error("Failed to update recent history:", error);

@@ -186,17 +186,32 @@ function Search() {
   };
 
   const addPath = async () => {
-    // path 등록
-    try {
-      const response = await axios.post(`${baseurl}/paths`, {
-        userID: userID,
-        originID: departure.placeID,
-        destinationID: arrival.placeID,
+    const recentPath = await axios.get(`${baseurl}/paths/${userID}/recents`);
+    // 경로가 이미 존재하는지 확인
+    const existingPath = recentPath.data.find(
+      (path) => path.originID === departure.placeID && path.destinationID === arrival.placeID
+    );
+
+    if (existingPath) {
+      console.log("이미 존재하는 경로입니다:", existingPath);
+      axios.put(`${baseurl}/paths/${existingPath.pathID}`, {
+        createdAt: new Date().toISOString()
       });
-      console.log("경로가 등록되었습니다:", response.data);
-    } catch (error) {
-      console.error("경로 등록 중 오류 발생:", error);
-    } 
+    }
+    else {
+      // path 등록
+      try {
+        const response = await axios.post(`${baseurl}/paths`, {
+          userID: userID,
+          originID: departure.placeID,
+          destinationID: arrival.placeID,
+        });
+        console.log("경로가 등록되었습니다:", response.data);
+      } catch (error) {
+        console.error("경로 등록 중 오류 발생:", error);
+      } 
+    }
+
 
     // origin과 destination의 좌표 가져오기
     try {
@@ -228,8 +243,8 @@ function Search() {
     try {
       const response = await axios.get(`/api/search-path`, {
         params: {
-          start: start_longitude + ", " + start_latitude,
-          goal: goal_longitude + ", " + goal_latitude
+          start: `${start_longitude},${start_latitude}`,
+          goal: `${goal_longitude},${goal_latitude}`
         }
       });
 
