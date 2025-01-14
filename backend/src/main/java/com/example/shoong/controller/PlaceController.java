@@ -3,6 +3,7 @@ package com.example.shoong.controller;
 import com.example.shoong.dto.place.PlaceCreateRequest;
 import com.example.shoong.dto.place.PlaceDTO;
 import com.example.shoong.dto.place.PlaceUpdateRequest;
+import com.example.shoong.dto.user.UserDTO;
 import com.example.shoong.service.PlaceService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,16 @@ public class PlaceController {
     private final PlaceService placeService;
     public PlaceController(PlaceService placeService) {
         this.placeService = placeService;
+    }
+
+    /**
+   * [GET] /places
+   * 모든 장소 조회
+   */
+    @GetMapping
+    public ResponseEntity<Iterable<PlaceDTO>> getPlaces() {
+        Iterable<PlaceDTO> places = placeService.getPlaces();
+        return ResponseEntity.ok(places);
     }
 
     // [POST] /places

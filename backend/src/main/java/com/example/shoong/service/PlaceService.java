@@ -3,13 +3,17 @@ package com.example.shoong.service;
 import com.example.shoong.dto.place.PlaceCreateRequest;
 import com.example.shoong.dto.place.PlaceDTO;
 import com.example.shoong.dto.place.PlaceUpdateRequest;
+import com.example.shoong.dto.user.UserDTO;
 import com.example.shoong.entity.Place;
+import com.example.shoong.entity.User;
 import com.example.shoong.exception.ResourceNotFoundException;
 import com.example.shoong.repository.PlaceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class PlaceService {
@@ -32,6 +36,14 @@ public class PlaceService {
 
         Place saved = placeRepository.save(place);
         return toDTO(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlaceDTO> getPlaces() {
+        List<Place> places = placeRepository.findAll();
+        return places.stream()
+            .map(this::toDTO)
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

@@ -1,5 +1,7 @@
 package com.example.shoong.service;
 
+import com.example.shoong.dto.place.PlaceDTO;
+import com.example.shoong.dto.place.PlaceUpdateRequest;
 import com.example.shoong.dto.recent.RecentCreateRequest;
 import com.example.shoong.dto.recent.RecentDTO;
 import com.example.shoong.entity.Place;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class RecentService {
@@ -31,10 +34,18 @@ public class RecentService {
         this.recentRepository = recentRepository;
         this.userRepository = userRepository;
         this.placeRepository = placeRepository;
-    }
+        }
 
-    @Transactional
-    public RecentDTO createRecent(RecentCreateRequest request) {
+        @Transactional(readOnly = true)
+        public List<RecentDTO> getRecents() {
+        List<Recent> recents = recentRepository.findAll();
+        return recents.stream()
+            .map(this::toDTO)
+            .collect(Collectors.toList());
+        }
+
+        @Transactional
+        public RecentDTO createRecent(RecentCreateRequest request) {
         User user = userRepository.findById(request.getUserID())
                 .orElseThrow(() -> new ResourceNotFoundException("유저가 없습니다. ID=" + request.getUserID()));
         Place place = placeRepository.findById(request.getPlaceID())
@@ -57,11 +68,29 @@ public class RecentService {
                 .stream()
                 .filter(r -> r.getUser().getUserID().equals(userID))
                 .toList();
-        return list.stream().map(this::toDTO).toList();
-    }
+        return list.stream().map(this::toDTO).collect(Collectors.toList());
+        }
 
-    @Transactional
-    public void deleteRecent(String recentID) {
+        @Transactional
+        public RecentDTO updateRecent(String recentID, RecentCreateRequest request) {
+        Recent recent = recentRepository.findById(recentID)
+            .orElseThrow(() -> new ResourceNotFoundException("최근 검색 기록을 찾을 수 없습니다. ID=" + recentID));
+
+        User user = userRepository.findById(request.getUserID())
+            .orElseThrow(() -> new ResourceNotFoundException("유저를 찾을 수 없습니다. ID=" + request.getUserID()));
+        Place place = placeRepository.findById(request.getPlaceID())
+            .orElseThrow(() -> new ResourceNotFoundException("장소를 찾을 수 없습니다. ID=" + request.getPlaceID()));
+
+        recent.setUser(user);
+        recent.setPlace(place);
+        recent.setCreatedAt(LocalDateTime.now());
+
+        Recent updated = recentRepository.save(recent);
+        return toDTO(updated);
+        }
+
+        @Transactional
+        public void deleteRecent(String recentID) {
         if(!recentRepository.existsById(recentID)) {
             throw new ResourceNotFoundException("해당 최근 검색 기록이 없습니다. ID=" + recentID);
         }

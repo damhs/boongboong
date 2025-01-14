@@ -3,6 +3,7 @@ package com.example.shoong.service;
 import com.example.shoong.dto.path.PathCreateRequest;
 import com.example.shoong.dto.path.PathDTO;
 import com.example.shoong.dto.path.PathUpdateRequest;
+import com.example.shoong.dto.place.PlaceDTO;
 import com.example.shoong.entity.Path;
 import com.example.shoong.entity.Place;
 import com.example.shoong.entity.User;
@@ -32,10 +33,18 @@ public class PathService {
     this.pathRepository = pathRepository;
     this.userRepository = userRepository;
     this.placeRepository = placeRepository;
-  }
+    }
 
-  @Transactional
-  public PathDTO createPath(PathCreateRequest request) {
+    @Transactional(readOnly = true)
+    public List<PathDTO> getPaths() {
+      List<Path> paths = pathRepository.findAll();
+      return paths.stream()
+        .map(this::toDTO)
+        .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public PathDTO createPath(PathCreateRequest request) {
     // user, origin, destination 존재 여부 체크
     User user = userRepository.findById(request.getUserID())
         .orElseThrow(() -> new ResourceNotFoundException("유저가 존재하지 않습니다. ID=" + request.getUserID()));
