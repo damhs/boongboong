@@ -1,14 +1,9 @@
 import React, { useRef, useState, useEffect } from "react";
-import axios from "axios";
 import styles from "./RecentHistory.module.css";
 import RecentHistoryItem from "./RecentHistoryItem";
 import PathItem from "./PathItem";
-import config from "../../config";
 
-const baseurl = config.backendUrl;
-
-
-const RecentHistory = ({ recentPath, recentHistory, onPathDelete, onItemDelete, onItemSelect }) => {
+const RecentHistory = ({ recentPath, recentHistory, onPathDelete, onPathSelect, onItemDelete, onItemSelect }) => {
   const scrollRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -48,9 +43,10 @@ const RecentHistory = ({ recentPath, recentHistory, onPathDelete, onItemDelete, 
         >
           {recentPath.map((path) => (
             <PathItem 
-              key={path.id} 
+              key={path.pathID} 
               path={path} 
-              onDelete={() => onPathDelete(path.id)}/>
+              onDelete={() => onPathDelete(path.pathID)}
+              onSelect={() => onPathSelect(path)}/>
           ))}
         </div>
       )}

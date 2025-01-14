@@ -68,6 +68,37 @@ function Search() {
     }
   };
 
+  // 최근 경로 선택
+  const handleSelectPath = async (path) => {
+    try{
+      const response = await axios.get(`${baseurl}/paths/${path.pathID}`);
+      const matchedPath = response.data;
+      console.log("최근 경로 선택:", matchedPath);
+
+      if (!matchedPath) {
+        console.error("최근 경로에 해당하는 장소를 찾을 수 없습니다. placeID: ", path.pathID);
+        return;
+      }
+
+      const originResponse = await axios.get(`${baseurl}/places/${matchedPath.originID}`);
+      const destinationResponse = await axios.get(`${baseurl}/places/${matchedPath.destinationID}`);
+      const originPlace = originResponse.data;
+      const destinationPlace = destinationResponse.data;
+
+      if (!originPlace || !destinationPlace) {
+        console.error("경로에 해당하는 장소를 찾을 수 없습니다. originID:", matchedPath.originID, "destinationID:", matchedPath.destinationID);
+        return;
+      }
+
+      localStorage.setItem("departure", JSON.stringify(originPlace));
+      localStorage.setItem("arrival", JSON.stringify(destinationPlace));
+
+      // navigate("/search", { state: { matchedPlace, placeType: "arrival" } });
+    } catch (error) {
+      console.error("일치하는 place를 찾을 수 없습니다. placeID:", path.destinationID, "오류 메시지:", error.message);
+    }
+  };
+
   // 최근 내역 삭제
   const handleItemDelete = async (itemId) => {
     try {
@@ -123,7 +154,7 @@ function Search() {
     fetchRecentPaths();
     fetchRecentHistory();
 
-    if (location.state?.selectedPlace && location.state?.placeType) {
+    if (location.state?.selectedPlace && location.state?.placeType && departure && arrival) {
       const { selectedPlace, placeType } = location.state;
 
       if (placeType === 'departure') {
@@ -248,6 +279,7 @@ function Search() {
         recentPath={recentPath}
         recentHistory={recentHistory}
         onPathDelete={handlePathDelete}
+        onPathSelect={handleSelectPath}
         onItemDelete={handleItemDelete}
         onItemSelect={handleSelectRecent}
       />
