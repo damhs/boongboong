@@ -15,7 +15,7 @@ function Home() {
 
   return (
     <div style={{ textAlign: 'center'}}>
-      {/* <Map /> */}
+      <Map />
       <TrafficInfo />
       <button className={styles.navigationButton}>
         <NavigationIcon onClick={handleButtonClick}/>
