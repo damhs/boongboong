@@ -66,7 +66,7 @@ public class PathService {
 
   @Transactional(readOnly = true)
   public List<PathDTO> getRecentPaths(String userID) {
-    List<Path> paths = pathRepository.findTop10ByUserIdOrderByCreatedAtDesc(userID);
+    List<Path> paths = pathRepository.findTop10ByUser_UserIDOrderByCreatedAtDesc(userID);
     return paths.stream()
         .map(path -> toDTO(path))
         .collect(Collectors.toList());
