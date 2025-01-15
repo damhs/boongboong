@@ -38,6 +38,33 @@ function Search() {
     }
   };
 
+  const handleSelectFavorite = (favorite) => {
+    try {
+      const response = axios.get(`${baseurl}/places/${favorite.placeID}`);
+      const matchedPlace = response.data;
+      console.log("즐겨찾기 선택:", matchedPlace);
+
+      if(!matchedPlace) {
+        console.error("즐겨찾기에 해당하는 장소를 찾을 수 없습니다. placeID:", favorite.placeID);
+        return;
+      }
+
+      setArrival(matchedPlace);
+      localStorage.setItem("arrival", JSON.stringify(matchedPlace));
+      console.log("도착지:", matchedPlace);
+
+      navigate("/search", { state: { matchedPlace, placeType: "arrival" } });
+    } catch (error) {
+      console.error(
+        "일치하는 place를 찾을 수 없습니다. placeID:",
+        favorite.placeID,
+        "오류 메시지:",
+        error.message
+      );
+    }
+  };
+
+
   // 최근 경로 데이터 가져오기
   const fetchRecentPaths = async () => {
     try {
@@ -291,7 +318,9 @@ function Search() {
         onButtonClick={handleFindPath}
       />
       <ArrivalTime />
-      <Favorites favorites={favorites} />
+      <Favorites 
+        favorites={favorites} 
+        onPlaceClick={handleSelectFavorite}/>
       <RecentHistory
         recentPath={recentPath}
         recentHistory={recentHistory}

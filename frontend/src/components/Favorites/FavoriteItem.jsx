@@ -3,7 +3,7 @@ import styles from "./FavoriteItem.module.css";
 import { LuStar } from "react-icons/lu";
 
 const FavoriteItem = ({ place, onClick }) => (
-  <button className={styles.favoriteButton} onClick={() => onClick(place)}>
+  <button className={styles.favoriteButton} onClick={onClick}>
     <LuStar className={styles.starIcon}/>
     {place}
   </button>
