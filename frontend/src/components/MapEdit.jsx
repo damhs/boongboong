@@ -4,8 +4,22 @@ import React, { useEffect, useState } from "react";
 const { Tmapv3 } = window;
 const Map = () => {
   const [map, setMap] = useState(null); // 지도 객체를 상태로 관리
+  const [socket, setSocket] = useState(null);
+  const [currentPosition, setCurrentPosition] = useState({ latitude: 0, longitude: 0 });
 
   useEffect(() => {
+    // WebSocket 초기화
+    const ws = new WebSocket("ws://localhost:8080/ws");
+    setSocket(ws);
+
+    ws.onopen = () => {
+      console.log("WebSocket connected");
+    };
+
+    ws.onclose = () => {
+      console.log("WebSocket disconnected");
+    };
+
     // Tmap 초기화 함수
     const initTmap = (latitude, longitude) => {
       const mapDiv = document.getElementById("map_div");
@@ -81,6 +95,7 @@ const Map = () => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
+        setCurrentPosition({ latitude, longitude });
         initTmap(latitude, longitude); // 현재 위치를 기반으로 지도 초기화
         console.log("User Location:", latitude, longitude);
         // getRP();
@@ -89,14 +104,22 @@ const Map = () => {
       (error) => {
         console.error("Geolocation error:", error);
         // 기본 위치를 서울로 설정 (37.56520450, 126.98702028)
+        setCurrentPosition({ latitude: 37.56520450, longitude: 126.98702028 });
         initTmap(37.56520450, 126.98702028);
         console.log("Fallback to default location: Seoul");
       }
     );
 
+    // 0.1초마다 위치 전송
+    const interval = setInterval(() => {
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify(currentPosition));
+      }
+    }, 100); // 0.1초
+
     // Tmap 스크립트 로드
     const script = document.createElement("script");
-    script.src = "https://apis.openapi.sk.com/tmap/vectorjs?version=1&appKey=dZRoIO7xYf6Ofjq4VHMu07ORfd6PKnpW949Gqcx1"; // YOUR_APP_KEY를 실제 Tmap API 키로 대체
+    script.src = "https://apis.openapi.sk.com/tmap/vectorjs?version=1&appKey="; // YOUR_APP_KEY를 실제 Tmap API 키로 대체
     script.async = true;
     document.body.appendChild(script);
 
