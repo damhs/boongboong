@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PathService {
@@ -44,7 +45,7 @@ public class PathService {
   }
 
   @Transactional
-  public PathDTO createPath(PathCreateRequest request) {
+  public PathDTO createOrUpdatePath(PathCreateRequest request) {
     // user, origin, destination 존재 여부 체크
     User user = userRepository.findById(request.getUserID())
         .orElseThrow(() -> new ResourceNotFoundException("유저가 존재하지 않습니다. ID=" + request.getUserID()));
@@ -53,14 +54,23 @@ public class PathService {
     Place dest = placeRepository.findById(request.getDestinationID())
         .orElseThrow(() -> new ResourceNotFoundException("도착지 장소가 없습니다. ID=" + request.getDestinationID()));
 
-    Path path = new Path();
-    path.setPathID(UUID.randomUUID().toString());
-    path.setUser(user);
-    path.setOrigin(origin);
-    path.setDestination(dest);
-    path.setTotalDistance(request.getTotalDistance());
-    path.setTotalTime(request.getTotalTime());
-    path.setUpdatedAt(LocalDateTime.now());
+    Optional<Path> existingPath = pathRepository.findByUser_UserIDAndOrigin_PlaceIDAndDestination_PlaceID(
+        request.getUserID(), request.getOriginID(), request.getDestinationID());
+
+    Path path;
+    if (existingPath.isPresent()) {
+      path = existingPath.get();
+      path.setUpdatedAt(LocalDateTime.now());
+    } else {
+      path = new Path();
+      path.setPathID(UUID.randomUUID().toString());
+      path.setUser(user);
+      path.setOrigin(origin);
+      path.setDestination(dest);
+      path.setTotalDistance(request.getTotalDistance());
+      path.setTotalTime(request.getTotalTime());
+      path.setUpdatedAt(LocalDateTime.now());
+    }
 
     Path saved = pathRepository.save(path);
     return toDTO(saved);

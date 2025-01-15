@@ -21,8 +21,9 @@ public class RefreshToken {
     @Column(nullable = false, unique = true)
     private String token; // Refresh Token 값
 
-    @Column(nullable = false)
-    private String userID; // 사용자 ID와 연결
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userID", nullable = false)
+    private User user; // 사용자와 연결
 
     @Column(nullable = false)
     private LocalDateTime expiresAt; // 만료 시간
