@@ -14,12 +14,17 @@ function Home() {
   };
 
   return (
-    <div style={{ textAlign: 'center'}}>
-      <Map />
-      <TrafficInfo />
-      <button className={styles.navigationButton}>
-        <NavigationIcon onClick={handleButtonClick}/>
-      </button>
+    <div style={{ textAlign: 'center' }}>
+      <div style={{ position: 'relative', height: '100vh' }}> {/* 부모 요소에 상대 위치 설정 */}
+        <Map />
+        <button 
+          className={styles.navigationButton} 
+          onClick={handleButtonClick}
+        >
+          <NavigationIcon />
+        </button>
+      </div>
+      {/* <TrafficInfo /> */}
     </div>
   );
 }

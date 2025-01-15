@@ -11,7 +11,7 @@ const Map = () => {
         const tmap = new window.Tmapv3.Map("map_div", {
           center: new window.Tmapv3.LatLng(latitude, longitude), // 유저의 현재 위치
           width: "100%", // 지도의 넓이
-          height: "400px", // 지도의 높이
+          height: "100%", // 지도의 높이
           zoom: 17, // 지도 줌레벨
           pitch: 60,
         });
