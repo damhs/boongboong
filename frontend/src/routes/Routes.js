@@ -5,6 +5,7 @@ import Search from '../pages/Search';
 import Login from '../pages/Login';
 import Signup from '../pages/Signup';
 import SearchPlace from '../pages/SearchPlace';
+import Navigate from '../pages/Navigate';
 
 function AppRoutes() {
   return (
@@ -14,6 +15,7 @@ function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/search-place" element={<SearchPlace />} />
+      <Route path="/navigate" element= {<Navigate />} />
     </Routes>
   );
 }

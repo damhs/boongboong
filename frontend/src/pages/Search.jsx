@@ -237,41 +237,43 @@ function Search() {
 
     console.log("길찾기를 시작합니다...");
     
-    const { start_latitude, start_longitude, goal_latitude, goal_longitude } = await addPath();
-    console.log("좌표:", start_latitude, start_longitude, goal_latitude, goal_longitude);
+    // const { start_latitude, start_longitude, goal_latitude, goal_longitude } = await addPath();
+    // console.log("좌표:", start_latitude, start_longitude, goal_latitude, goal_longitude);
 
     try {
-      const response = await axios.get(`/api/search-path`, {
-        params: {
-          start: `${start_longitude},${start_latitude}`,
-          goal: `${goal_longitude},${goal_latitude}`
-        }
-      });
+      // const response = await axios.get(`/api/search-path`, {
+      //   params: {
+      //     start: `${start_longitude},${start_latitude}`,
+      //     goal: `${goal_longitude},${goal_latitude}`
+      //   }
+      // });
 
-      const guide = response.data;
+      // const guide = response.data;
 
-      if (guide.route && guide.route.traoptimal && guide.route.traoptimal.length > 0) {
-        const guides = guide.route.traoptimal[0].guide;
-        const paths = guide.route.traoptimal[0].path;
+      // if (guide.route && guide.route.traoptimal && guide.route.traoptimal.length > 0) {
+      //   const guides = guide.route.traoptimal[0].guide;
+      //   const paths = guide.route.traoptimal[0].path;
 
-        if (guides && guides.length > 0 && Array.isArray(paths)) {
-          guides.forEach((step, index) => {
-            if (step.instructions && typeof step.pointIndex === "number") {
-              if (step.pointIndex >= 0 && step.pointIndex < paths.length) {
-                console.log(`Step ${index + 1}: ${step.instructions} (${paths[step.pointIndex][0]}, ${paths[step.pointIndex][1]})`);
-              } else {
-                console.log(`Step ${index + 1}: ${step.instructions} (잘못된 좌표 데이터)`);
-              }
-            } else {
-              console.log(`Step ${index + 1}: 데이터 누락`);
-            }
-          });
-        } else {
-          console.log("길 안내 데이터가 없습니다.");
-        }
-      } else {
-        console.log("경로 데이터가 없습니다.");
-      }
+      //   if (guides && guides.length > 0 && Array.isArray(paths)) {
+      //     guides.forEach((step, index) => {
+      //       if (step.instructions && typeof step.pointIndex === "number") {
+      //         if (step.pointIndex >= 0 && step.pointIndex < paths.length) {
+      //           console.log(`Step ${index + 1}: ${step.instructions} (${paths[step.pointIndex][0]}, ${paths[step.pointIndex][1]})`);
+      //         } else {
+      //           console.log(`Step ${index + 1}: ${step.instructions} (잘못된 좌표 데이터)`);
+      //         }
+      //       } else {
+      //         console.log(`Step ${index + 1}: 데이터 누락`);
+      //       }
+      //     });
+
+      //   } else {
+      //     console.log("길 안내 데이터가 없습니다.");
+      //   }
+      // } else {
+      //   console.log("경로 데이터가 없습니다.");
+      // }
+      navigate("/navigate");
     } catch (error) {
       console.error("경로를 찾는 중 오류 발생:", error);
     }
