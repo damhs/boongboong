@@ -145,7 +145,7 @@ function SearchPlace() {
       // if (recents.data.some((recent) => recent.placeID === selectedPlace.placeID)) {
       //   const recentID = recents.data.find((recent) => recent.placeID === selectedPlace.placeID).recentID;
       //   const putInfo = await axios.put(`${baseurl}/recents/${recentID}`, {
-      //     createdAt: new Date().toISOString()
+      //     updatedAt: new Date().toISOString()
       //   });
       //   console.log(`최근 내역 갱신 완료: ${putInfo.data}`);
       // } else {

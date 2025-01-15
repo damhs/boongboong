@@ -33,18 +33,18 @@ public class PathService {
     this.pathRepository = pathRepository;
     this.userRepository = userRepository;
     this.placeRepository = placeRepository;
-    }
+  }
 
-    @Transactional(readOnly = true)
-    public List<PathDTO> getPaths() {
-      List<Path> paths = pathRepository.findAll();
-      return paths.stream()
+  @Transactional(readOnly = true)
+  public List<PathDTO> getPaths() {
+    List<Path> paths = pathRepository.findAll();
+    return paths.stream()
         .map(this::toDTO)
         .collect(Collectors.toList());
-    }
+  }
 
-    @Transactional
-    public PathDTO createPath(PathCreateRequest request) {
+  @Transactional
+  public PathDTO createPath(PathCreateRequest request) {
     // user, origin, destination 존재 여부 체크
     User user = userRepository.findById(request.getUserID())
         .orElseThrow(() -> new ResourceNotFoundException("유저가 존재하지 않습니다. ID=" + request.getUserID()));
@@ -60,7 +60,7 @@ public class PathService {
     path.setDestination(dest);
     path.setTotalDistance(request.getTotalDistance());
     path.setTotalTime(request.getTotalTime());
-    path.setCreatedAt(LocalDateTime.now());
+    path.setUpdatedAt(LocalDateTime.now());
 
     Path saved = pathRepository.save(path);
     return toDTO(saved);
@@ -75,7 +75,7 @@ public class PathService {
 
   @Transactional(readOnly = true)
   public List<PathDTO> getRecentPaths(String userID) {
-    List<Path> paths = pathRepository.findTop10ByUser_UserIDOrderByCreatedAtDesc(userID);
+    List<Path> paths = pathRepository.findTop10ByUser_UserIDOrderByUpdatedAtDesc(userID);
     return paths.stream()
         .map(path -> toDTO(path))
         .collect(Collectors.toList());
@@ -110,7 +110,7 @@ public class PathService {
     dto.setDestinationID(path.getDestination().getPlaceID());
     dto.setTotalDistance(path.getTotalDistance());
     dto.setTotalTime(path.getTotalTime() == null ? null : path.getTotalTime().toString());
-    dto.setCreatedAt(path.getCreatedAt() == null ? null : path.getCreatedAt().toString());
+    dto.setUpdatedAt(path.getUpdatedAt() == null ? null : path.getUpdatedAt().toString());
     return dto;
   }
 }

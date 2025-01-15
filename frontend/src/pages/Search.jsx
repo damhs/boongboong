@@ -195,7 +195,7 @@ function Search() {
     if (existingPath) {
       console.log("이미 존재하는 경로입니다:", existingPath);
       axios.put(`${baseurl}/paths/${existingPath.pathID}`, {
-        createdAt: new Date().toISOString()
+        updatedAt: new Date().toISOString()
       });
     }
     else {

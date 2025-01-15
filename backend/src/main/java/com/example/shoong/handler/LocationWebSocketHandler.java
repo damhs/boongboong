@@ -1,5 +1,6 @@
 package com.example.shoong.handler;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -10,15 +11,22 @@ import com.example.shoong.entity.Location;
 import com.example.shoong.entity.Segment;
 import com.example.shoong.entity.UserProgress;
 import com.example.shoong.repository.LightRepository;
+import com.example.shoong.repository.SegmentRepository;
+import com.example.shoong.service.LightService;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LocationWebSocketHandler extends TextWebSocketHandler {
 
-  private final LightRepository lightRepository;
+  @Autowired
+    private SegmentRepository segmentRepository;
 
-  public LocationWebSocketHandler(LightRepository lightRepository) {
-    this.lightRepository = lightRepository;
+    @Autowired
+    private LightService lightService;
+
+  public LocationWebSocketHandler(SegmentRepository segmentRepository, LightService lightService) {
+    this.segmentRepository = segmentRepository;
+    this.lightService = lightService;
   }
 
   private final ObjectMapper objectMapper = new ObjectMapper();
@@ -32,39 +40,36 @@ public class LocationWebSocketHandler extends TextWebSocketHandler {
   }
 
   @Override
-  protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-    String payload = message.getPayload();
-    Location userLocation = objectMapper.readValue(payload, Location.class);
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        String payload = message.getPayload();
+        Location userLocation = objectMapper.readValue(payload, Location.class);
 
-    UserProgress progress = userProgressMap.get(session.getId());
-    if (progress == null)
-      return;
+        UserProgress progress = userProgressMap.get(session.getId());
+        if (progress == null) return;
 
-    // 현재 세그먼트 가져오기
-    Segment currentSegment = progress.getCurrentSegment();
-    if (currentSegment == null) {
-      progress.loadSegmentsFromDB(); // 경로 초기화 (DB에서 세그먼트 불러오기)
-      currentSegment = progress.getCurrentSegment();
-    }
+        Segment currentSegment = progress.getCurrentSegment();
+        if (currentSegment == null) return;
 
-    // Light의 위도/경도 가져오기
-    Light light = lightRepository.findByLightID(currentSegment.getLightID());
-    if (light == null)
-      return;
+        Light light = lightService.getLightById(currentSegment.getLightID());
+        if (isCloseToLight(userLocation, light)) {
+            progress.moveToNextSegment();
 
-    // 유저가 현재 세그먼트를 지나갔는지 확인
-    if (isCloseToLight(userLocation, light)) {
-      if (progress.moveToNextSegment()) {
-        Segment nextSegment = progress.getCurrentSegment();
-        if (nextSegment != null) {
-          session.sendMessage(new TextMessage("Next segment: " + nextSegment.getSequenceNumber()));
-        } else {
-          session.sendMessage(new TextMessage("You have reached your destination!"));
-          userProgressMap.remove(session.getId()); // 진행 완료 시 제거
+            Segment nextSegment = progress.getCurrentSegment();
+            if (nextSegment != null) {
+                int remainingTime = lightService.getRemainingTime(light.getItstId());
+                int recommendedSpeed = calculateRecommendedSpeed(nextSegment, remainingTime);
+
+                session.sendMessage(new TextMessage("Next segment: " + nextSegment.getDescription() +
+                        ", Recommended Speed: " + recommendedSpeed + "km/h"));
+            } else {
+                session.sendMessage(new TextMessage("목적지에 도착했습니다!"));
+            }
         }
-      }
     }
-  }
+
+    private int calculateRecommendedSpeed(Segment segment, int remainingTime) {
+        return (segment.getDistance() * 3600) / remainingTime;
+    }
 
   @Override
   public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {

@@ -12,5 +12,5 @@ public class PathDTO {
     private String destinationID;
     private Integer totalDistance;
     private String totalTime;  // "HH:mm:ss"
-    private String createdAt;
+    private String updatedAt;
 }

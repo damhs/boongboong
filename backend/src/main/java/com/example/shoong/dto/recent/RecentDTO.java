@@ -9,5 +9,5 @@ public class RecentDTO {
     private String recentID;
     private String userID;
     private String placeID;
-    private String createdAt;
+    private String updatedAt;
 }

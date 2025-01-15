@@ -27,5 +27,5 @@ public class Recent {
     private Place place;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

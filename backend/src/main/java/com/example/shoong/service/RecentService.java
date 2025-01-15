@@ -55,7 +55,7 @@ public class RecentService {
         recent.setRecentID(UUID.randomUUID().toString());
         recent.setUser(user);
         recent.setPlace(place);
-        recent.setCreatedAt(LocalDateTime.now());
+        recent.setUpdatedAt(LocalDateTime.now());
 
         Recent saved = recentRepository.save(recent);
         return toDTO(saved);
@@ -83,7 +83,7 @@ public class RecentService {
 
         recent.setUser(user);
         recent.setPlace(place);
-        recent.setCreatedAt(LocalDateTime.now());
+        recent.setUpdatedAt(LocalDateTime.now());
 
         Recent updated = recentRepository.save(recent);
         return toDTO(updated);
@@ -102,7 +102,7 @@ public class RecentService {
         dto.setRecentID(recent.getRecentID());
         dto.setUserID(recent.getUser().getUserID());
         dto.setPlaceID(recent.getPlace().getPlaceID());
-        dto.setCreatedAt(recent.getCreatedAt().toString());
+        dto.setUpdatedAt(recent.getUpdatedAt().toString());
         return dto;
     }
 }
