@@ -66,7 +66,7 @@ const Login = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <label>
+        <label className={styles.rememberMeLabel}>
           <input
             type="checkbox"
             name="remember-me" // SecurityConfig의 .rememberMeParameter("remember-me")와 일치
@@ -78,8 +78,6 @@ const Login = () => {
         <button type="submit" className={styles.loginButton}>
           로그인
         </button>
-      </form>
-      <form className={styles.form}>
         <button
           type="button"
           className={styles.signupButton}
