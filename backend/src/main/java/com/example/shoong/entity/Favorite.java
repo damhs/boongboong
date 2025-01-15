@@ -26,7 +26,7 @@ public class Favorite {
     @JoinColumn(name = "placeID")  // FK -> Place
     private Place place;
 
-    @Column(length = 50)
+    @Column(name = "favoriteName", length = 50)
     private String favoriteName;
 
     @Column(name = "updated_at")

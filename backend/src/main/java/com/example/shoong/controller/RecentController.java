@@ -1,8 +1,5 @@
 package com.example.shoong.controller;
 
-import com.example.shoong.dto.path.PathDTO;
-import com.example.shoong.dto.place.PlaceDTO;
-import com.example.shoong.dto.place.PlaceUpdateRequest;
 import com.example.shoong.dto.recent.RecentCreateRequest;
 import com.example.shoong.dto.recent.RecentDTO;
 import com.example.shoong.service.RecentService;
