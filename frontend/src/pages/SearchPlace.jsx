@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "../components/SearchBar/SearchBar.module.css";
 import { IoSearch } from "react-icons/io5";
+import Header from "../components/Header/Header";
 import RecentHistory from "../components/RecentHistory/RecentHistory";
 import SearchResult from "../components/SearchResult/SearchResult";
 import config from "../config";
@@ -182,7 +183,8 @@ function SearchPlace() {
   }, []);
 
   return (
-    <div>
+    <div style={{ padding: "16px", fontFamily: "Arial, sans-serif" }}>
+      <Header />
       <div className={styles.inputWrapper} 
         style={{marginTop: "20px", marginBottom: "20px", marginLeft: "3vw", marginRight: "3vw"} 
       }>  
