@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import tmap_api_key from "../config_key";
 
 const Map = () => {
   const [map, setMap] = useState(null); // 지도 객체를 상태로 관리
@@ -42,7 +43,7 @@ const Map = () => {
 
     // Tmap 스크립트 로드
     const script = document.createElement("script");
-    script.src = "https://apis.openapi.sk.com/tmap/vectorjs?version=1&appKey="; // YOUR_APP_KEY를 실제 Tmap API 키로 대체
+    script.src = `https://apis.openapi.sk.com/tmap/vectorjs?version=1&appKey=${tmap_api_key}`; // YOUR_APP_KEY를 실제 Tmap API 키로 대체
     script.async = true;
     document.body.appendChild(script);
 

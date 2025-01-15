@@ -36,7 +36,14 @@
       );
     </script>
 
-    <script src="https://apis.openapi.sk.com/tmap/vectorjs?version=1&appKey="></script>
+    <script type="text/javascript">
+      // config.js 에서 TMAP_API_KEY를 가져옴
+      document.write(
+      '<script type="text/javascript" src="https://apis.openapi.sk.com/tmap/vectorjs?version=1&appKey=' +
+      window.TMAP_API_KEY +
+      '"><\/script>'
+      );
+    </script>
     
   </head>
   <body>

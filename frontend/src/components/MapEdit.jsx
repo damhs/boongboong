@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import tmap_api_key from "../config_key";
 // import { TMap } from '@/types';
 
 const { Tmapv3 } = window;
@@ -119,13 +120,15 @@ const Map = () => {
 
     // Tmap 스크립트 로드
     const script = document.createElement("script");
-    script.src = "https://apis.openapi.sk.com/tmap/vectorjs?version=1&appKey="; // YOUR_APP_KEY를 실제 Tmap API 키로 대체
+    script.src = `https://apis.openapi.sk.com/tmap/vectorjs?version=1&appKey=${tmap_api_key}`; // YOUR_APP_KEY를 실제 Tmap API 키로 대체
     script.async = true;
     document.body.appendChild(script);
 
     // 컴포넌트 언마운트 시 스크립트 제거
     return () => {
       document.body.removeChild(script);
+      clearInterval(interval);
+      ws.close();
     };
   }, []);
 
