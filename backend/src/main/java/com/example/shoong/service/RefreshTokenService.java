@@ -27,16 +27,16 @@ public class RefreshTokenService {
     User user = userRepository.findByLoginID(loginID)
         .orElseThrow(() -> new IllegalArgumentException("User with loginID " + loginID + " not found"));
 
-    // 기존 토큰 삭제 (선택 사항: 한 사용자당 하나의 Refresh Token만 유지)
-    refreshTokenRepository.deleteByUser(user);
-
     // 새 토큰 생성
     String token = UUID.randomUUID().toString();
+    LocalDateTime expiresAt = LocalDateTime.now().plusDays(7); // Token valid for 7 days
 
+    // Save token to DB
     RefreshToken refreshToken = new RefreshToken();
     refreshToken.setToken(token);
     refreshToken.setUser(user);
-    refreshToken.setExpiresAt(LocalDateTime.now().plusDays(7)); // 7일 유효
+    refreshToken.setExpiresAt(expiresAt);
+
 
     refreshTokenRepository.save(refreshToken);
     return token;
@@ -44,9 +44,9 @@ public class RefreshTokenService {
 
   // Refresh Token 검증
   public boolean validateRefreshToken(String token) {
-    Optional<RefreshToken> refreshTokenOpt = refreshTokenRepository.findByToken(token);
-    return refreshTokenOpt.isPresent() &&
-        refreshTokenOpt.get().getExpiresAt().isAfter(LocalDateTime.now());
+    return refreshTokenRepository.findByToken(token)
+                .map(refreshToken -> refreshToken.getExpiresAt().isAfter(LocalDateTime.now()))
+                .orElse(false);
   }
 
   // Refresh Token 삭제

@@ -19,13 +19,13 @@ const Login = () => {
     const formData = new URLSearchParams();
     formData.append("loginID", loginID); // <-- SecurityConfig에서 .usernameParameter("loginID")
     formData.append("password", password); // <-- .passwordParameter("password")
-    formData.append("remember-me", rememberMe ? "on" : "");
+    formData.append("remember-me", rememberMe ? true : false); // <-- .rememberMeParameter("remember-me")
 
     try {
       console.log("로그인 시도");
       const response = await axios.post(
         `${baseUrl}/auth/login`,
-        { loginID, password },
+        { loginID, password, rememberMe },
         {
           withCredentials: true,
           headers: { "Content-Type": "application/json" },
