@@ -68,7 +68,7 @@ public class SegmentService {
       segment.setDistance((Integer) step.get("distance"));
       segment.setDuration(LocalTime.ofSecondOfDay(((Number) step.get("duration")).longValue()));
       segment.setDirection(direction);
-
+      segment.setLight(closestLight);
       segmentRepository.save(segment);
     }
   }

@@ -32,4 +32,12 @@ public class Segment {
 
   @Column(length = 2)
   private String direction;
+
+  @ManyToOne
+  @JoinColumn(name = "lightID")
+  private Light light;
+
+  public String getLightID() {
+    return light != null ? light.getLightID() : null;
+  }
 }
