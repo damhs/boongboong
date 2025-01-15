@@ -21,6 +21,7 @@ public class Segment {
   @JoinColumn(name = "pathID", nullable = false)
   private Path path;
 
+  @Column(name = "sequence_number", nullable = false)
   private Integer sequenceNumber;
 
   @Column(length = 255)

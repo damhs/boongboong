@@ -15,7 +15,7 @@ function Search() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const userID = "1efd1a4b-706a-6e71-a44d-e7b1f23b2697";
+  const userID = localStorage.getItem("userID");
 
   const storedDeparture = localStorage.getItem("departure");
   const storedArrival = localStorage.getItem("arrival");

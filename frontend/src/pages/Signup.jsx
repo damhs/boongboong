@@ -34,7 +34,8 @@ const Signup = () => {
       });
 
       console.log(response);
-      const { userID } = response.data.userID;
+      const userID = response.data?.userID;
+      console.log("회원가입 성공:", userID);
       localStorage.setItem("userID", userID);
 
       // 회원가입 성공 시 처리 (예: 페이지 이동, 알림 등)
