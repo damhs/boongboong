@@ -13,16 +13,18 @@ import com.example.shoong.entity.UserProgress;
 import com.example.shoong.repository.LightRepository;
 import com.example.shoong.repository.SegmentRepository;
 import com.example.shoong.service.LightService;
+import com.example.shoong.dto.websocket.WebSocketRequest;
+import com.example.shoong.dto.websocket.WebSocketResponse;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LocationWebSocketHandler extends TextWebSocketHandler {
 
   @Autowired
-    private SegmentRepository segmentRepository;
+  private SegmentRepository segmentRepository;
 
-    @Autowired
-    private LightService lightService;
+  @Autowired
+  private LightService lightService;
 
   public LocationWebSocketHandler(SegmentRepository segmentRepository, LightService lightService) {
     this.segmentRepository = segmentRepository;
@@ -40,36 +42,37 @@ public class LocationWebSocketHandler extends TextWebSocketHandler {
   }
 
   @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        String payload = message.getPayload();
-        Location userLocation = objectMapper.readValue(payload, Location.class);
+  protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+    // Parse incoming message
+    WebSocketRequest request = objectMapper.readValue(message.getPayload(), WebSocketRequest.class);
 
-        UserProgress progress = userProgressMap.get(session.getId());
-        if (progress == null) return;
+    String pathID = request.getPathID();
+    Location userLocation = request.getLocation();
 
-        Segment currentSegment = progress.getCurrentSegment();
-        if (currentSegment == null) return;
+    // Get current segment
+    Segment currentSegment = segmentRepository.findByPath_PathIDAndSequenceNumber(pathID, 0);
 
-        Light light = lightService.getLightById(currentSegment.getLightID());
-        if (isCloseToLight(userLocation, light)) {
-            progress.moveToNextSegment();
+    // Get light information
+    Light light = lightService.getLightById(currentSegment.getLightID());
 
-            Segment nextSegment = progress.getCurrentSegment();
-            if (nextSegment != null) {
-                int remainingTime = lightService.getRemainingTime(light.getItstId());
-                int recommendedSpeed = calculateRecommendedSpeed(nextSegment, remainingTime);
+    // Get remaining green light time
+    int remainingTime = lightService.getRemainingGreenLightTime(light.getItstId(), currentSegment.getDirection());
 
-                session.sendMessage(new TextMessage("Next segment: " + nextSegment.getDescription() +
-                        ", Recommended Speed: " + recommendedSpeed + "km/h"));
-            } else {
-                session.sendMessage(new TextMessage("목적지에 도착했습니다!"));
-            }
-        }
-    }
+    // Calculate recommended speed
+    double distanceToLight = calculateDistance(userLocation.getLatitude(), userLocation.getLongitude(),
+        light.getLatitude(), light.getLongitude());
+    int recommendedSpeed = calculateRecommendedSpeed(distanceToLight, remainingTime);
 
-    private int calculateRecommendedSpeed(Segment segment, int remainingTime) {
-        return (segment.getDistance() * 3600) / remainingTime;
-    }
+    // Send data to client
+    WebSocketResponse response = new WebSocketResponse();
+    response.setRemainingTime(remainingTime);
+    response.setRecommendedSpeed(recommendedSpeed);
+    session.sendMessage(new TextMessage(objectMapper.writeValueAsString(response)));
+  }
+
+  private int calculateRecommendedSpeed(double distance, int time) {
+    return (int) ((distance / time) * 3600); // Convert m/s to km/h
+  }
 
   @Override
   public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {

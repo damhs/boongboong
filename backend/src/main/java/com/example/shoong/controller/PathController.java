@@ -30,7 +30,7 @@ public class PathController {
     // [POST] /paths
     @PostMapping
     public ResponseEntity<PathDTO> createPath(@Valid @RequestBody PathCreateRequest request) {
-        PathDTO dto = pathService.createPath(request);
+        PathDTO dto = pathService.createOrUpdatePath(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 

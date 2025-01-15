@@ -17,7 +17,7 @@ public class UserProgress {
 
     public void loadSegmentsFromDB() {
         // DB에서 경로와 관련된 세그먼트 데이터를 불러옵니다.
-        this.segments = segmentRepository.findByPathId(currentPathId); // DB 호출
+        this.segments = segmentRepository.findByPath_PathID(currentPathId); // DB 호출
     }
 
     public Segment getCurrentSegment() {
