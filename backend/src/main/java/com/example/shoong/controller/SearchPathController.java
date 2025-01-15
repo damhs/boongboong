@@ -73,7 +73,7 @@ public class SearchPathController {
     Map<String, Object> routeData = (Map<String, Object>) jsonMap.get("route");
     List<Object> traoptimal = (List<Object>) routeData.get("traoptimal");
     Map<String, Object> route = (Map<String, Object>) traoptimal.get(0);
-    List<Object> guides = (List<Object>) route.get("guide");
+    List<Map<String, Object>> guides = (List<Map<String, Object>>) route.get("guide");
     List<List<Double>> paths = (List<List<Double>>) route.get("path");
 
     // Path 엔티티 생성
