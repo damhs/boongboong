@@ -26,6 +26,6 @@ public class Recent {
     @JoinColumn(name = "placeID")
     private Place place;
 
-    @Column(name = "created_at")
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 }
