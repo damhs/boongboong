@@ -237,16 +237,16 @@ function Search() {
 
     console.log("길찾기를 시작합니다...");
     
-    // const { start_latitude, start_longitude, goal_latitude, goal_longitude } = await addPath();
-    // console.log("좌표:", start_latitude, start_longitude, goal_latitude, goal_longitude);
+    const { start_latitude, start_longitude, goal_latitude, goal_longitude } = await addPath();
+    console.log("좌표:", start_latitude, start_longitude, goal_latitude, goal_longitude);
 
     try {
-      // const response = await axios.get(`/api/search-path`, {
-      //   params: {
-      //     start: `${start_longitude},${start_latitude}`,
-      //     goal: `${goal_longitude},${goal_latitude}`
-      //   }
-      // });
+      const response = await axios.get(`/api/search-path`, {
+        params: {
+          start: `${start_longitude},${start_latitude}`,
+          goal: `${goal_longitude},${goal_latitude}`
+        }
+      });
 
       // const guide = response.data;
 

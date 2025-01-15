@@ -15,7 +15,7 @@ function SearchPlace() {
   const navigate = useNavigate();
   const location = useLocation();
   const placeType = location.state?.placeType;
-  const userID = "1efd1a4b-706a-6e71-a44d-e7b1f23b2697";
+  const userID = localStorage.getItem("userID");
 
   const [searchInput, setSearchInput] = useState("");
   const [recentHistory, setRecentHistory] = useState([]);

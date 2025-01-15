@@ -10,7 +10,7 @@ const Map = () => {
 
   useEffect(() => {
     // WebSocket 초기화
-    const ws = new WebSocket("ws://localhost:8080/ws");
+    const ws = new WebSocket("ws://localhost:8080/ws/location");
     setSocket(ws);
 
     ws.onopen = () => {

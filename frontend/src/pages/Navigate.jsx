@@ -9,7 +9,7 @@ function Navigate() {
 
   useEffect(() => {
     // WebSocket 연결
-    const socket = new WebSocket("ws://localhost:8080/ws");
+    const socket = new WebSocket("ws://localhost:8080/ws/location");
 
     socket.onopen = () => {
       console.log("WebSocket connected");
