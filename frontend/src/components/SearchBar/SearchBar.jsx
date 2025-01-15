@@ -15,7 +15,7 @@ const SearchBar = ({ departure, arrival, onDepartureClick, onArrivalClick, onBut
             type="text" 
             placeholder="출발지 입력" 
             className={styles.input} 
-            value={departure.placeName}
+            value={departure?.placeName || ""}
             onClick={onDepartureClick}
             readOnly
           />
@@ -26,7 +26,7 @@ const SearchBar = ({ departure, arrival, onDepartureClick, onArrivalClick, onBut
             type="text" 
             placeholder="도착지 입력" 
             className={styles.input} 
-            value={arrival.placeName}
+            value={arrival?.placeName || ""}
             onClick={onArrivalClick}
             readOnly
           />
