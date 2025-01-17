@@ -9,18 +9,6 @@ const Map = () => {
   const [currentPosition, setCurrentPosition] = useState({ latitude: 0, longitude: 0 });
 
   useEffect(() => {
-    // WebSocket 초기화
-    const ws = new WebSocket("ws://localhost:8080/ws/location");
-    setSocket(ws);
-
-    ws.onopen = () => {
-      console.log("WebSocket connected");
-    };
-
-    ws.onclose = () => {
-      console.log("WebSocket disconnected");
-    };
-
     // Tmap 초기화 함수
     const initTmap = (latitude, longitude) => {
       const mapDiv = document.getElementById("map_div");
@@ -128,7 +116,6 @@ const Map = () => {
     return () => {
       document.body.removeChild(script);
       clearInterval(interval);
-      ws.close();
     };
   }, []);
 

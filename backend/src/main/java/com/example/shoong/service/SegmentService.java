@@ -38,42 +38,66 @@ public class SegmentService {
             throw new IllegalArgumentException("guides와 paths의 크기가 일치하지 않습니다.");
         }
 
-        List<Light> lights = lightRepository.findAll(); // 모든 Light 데이터를 가져옴
+        List<Light> lights = lightRepository.findAll();
+        if (lights.isEmpty()) {
+            throw new ResourceNotFoundException("Light 데이터가 존재하지 않습니다.");
+        }
+
         for (int i = 0; i < guides.size(); i++) {
             Map<String, Object> step = guides.get(i);
 
             // 방위 계산을 위한 좌표 가져오기
-            String direction = null;
+            String direction = "nt"; // 기본 방향 설정
             if (i < paths.size() - 1) {
                 List<Double> currentPoint = paths.get(i);
                 List<Double> nextPoint = paths.get(i + 1);
 
+                if (!isValidCoordinate(currentPoint) || !isValidCoordinate(nextPoint)) {
+                    throw new IllegalArgumentException("유효하지 않은 좌표 값이 발견되었습니다.");
+                }
+
                 double angle = calculateDirection(
-                    currentPoint.get(1), currentPoint.get(0), // 현재 지점 (lat1, lon1)
-                    nextPoint.get(1), nextPoint.get(0)  // 다음 지점 (lat2, lon2)
+                        currentPoint.get(1), currentPoint.get(0),
+                        nextPoint.get(1), nextPoint.get(0)
                 );
                 direction = getDirectionFromAngle(angle);
             }
 
             List<Double> currentPoint = paths.get(i);
+            if (!isValidCoordinate(currentPoint)) {
+                throw new IllegalArgumentException("유효하지 않은 좌표 값이 발견되었습니다.");
+            }
             double currentLat = currentPoint.get(0);
             double currentLon = currentPoint.get(1);
 
-            // 가장 가까운 Light 찾기
             Light closestLight = findClosestLight(lights, currentLat, currentLon);
 
-            // Segment 생성 및 저장
+            Object durationObj = step.get("duration");
+            if (durationObj == null || !(durationObj instanceof Number)) {
+                throw new IllegalArgumentException("유효하지 않은 duration 값입니다.");
+            }
+
             Segment segment = new Segment();
             segment.setSegmentID(UUID.randomUUID().toString());
             segment.setPath(path);
             segment.setSequenceNumber(i + 1);
             segment.setDescription((String) step.get("instructions"));
             segment.setDistance((Integer) step.get("distance"));
-            segment.setDuration(LocalTime.ofSecondOfDay(((Number) step.get("duration")).longValue()));
+            segment.setDuration(LocalTime.ofSecondOfDay(((Number) durationObj).longValue()));
             segment.setDirection(direction);
             segment.setLight(closestLight);
+
             segmentRepository.save(segment);
         }
+    }
+
+    private boolean isValidCoordinate(List<Double> point) {
+        if (point == null || point.size() < 2) {
+            return false;
+        }
+        double lat = point.get(0);
+        double lon = point.get(1);
+        return lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180;
     }
 
     private Light findClosestLight(List<Light> lights, double currentLat, double currentLon) {
@@ -91,53 +115,49 @@ public class SegmentService {
     }
 
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-        // Haversine formula
-        final int R = 6371; // 지구 반지름 (km)
+        final int R = 6371;
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);
         double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-            + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-            * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c; // 두 지점 간 거리 반환 (km)
+        return R * c;
     }
 
     private double calculateDirection(double lat1, double lon1, double lat2, double lon2) {
         double deltaLon = Math.toRadians(lon2 - lon1);
         double y = Math.sin(deltaLon) * Math.cos(Math.toRadians(lat2));
         double x = Math.cos(Math.toRadians(lat1)) * Math.sin(Math.toRadians(lat2)) -
-            Math.sin(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.cos(deltaLon);
+                Math.sin(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.cos(deltaLon);
         double theta = Math.atan2(y, x);
-        double direction = Math.toDegrees(theta);
-
-        // 0~360도로 변환
-        return (direction + 360) % 360;
+        return (Math.toDegrees(theta) + 360) % 360;
     }
 
     private String getDirectionFromAngle(double angle) {
         if (angle >= 337.5 || angle < 22.5) {
-            return "nt"; // North
+            return "nt";
         } else if (angle >= 22.5 && angle < 67.5) {
-            return "ne"; // North-East
+            return "ne";
         } else if (angle >= 67.5 && angle < 112.5) {
-            return "et"; // East
+            return "et";
         } else if (angle >= 112.5 && angle < 157.5) {
-            return "se"; // South-East
+            return "se";
         } else if (angle >= 157.5 && angle < 202.5) {
-            return "st"; // South
+            return "st";
         } else if (angle >= 202.5 && angle < 247.5) {
-            return "sw"; // South-West
+            return "sw";
         } else if (angle >= 247.5 && angle < 292.5) {
-            return "wt"; // West
+            return "wt";
         } else {
-            return "nw"; // North-West
+            return "nw";
         }
     }
 
     @Transactional
     public SegmentDTO createSegment(SegmentCreateRequest request) {
         Path path = pathRepository.findById(request.getPathID())
-            .orElseThrow(() -> new ResourceNotFoundException("경로가 없습니다. ID=" + request.getPathID()));
+                .orElseThrow(() -> new ResourceNotFoundException("경로가 없습니다. ID=" + request.getPathID()));
 
         Segment seg = new Segment();
         seg.setSegmentID(UUID.randomUUID().toString());
@@ -154,14 +174,14 @@ public class SegmentService {
     @Transactional(readOnly = true)
     public SegmentDTO getSegment(String segmentID) {
         Segment seg = segmentRepository.findById(segmentID)
-            .orElseThrow(() -> new ResourceNotFoundException("세그먼트를 찾을 수 없습니다. ID=" + segmentID));
+                .orElseThrow(() -> new ResourceNotFoundException("세그먼트를 찾을 수 없습니다. ID=" + segmentID));
         return toDTO(seg);
     }
 
     @Transactional
     public SegmentDTO updateSegment(String segmentID, SegmentUpdateRequest request) {
         Segment seg = segmentRepository.findById(segmentID)
-            .orElseThrow(() -> new ResourceNotFoundException("세그먼트를 찾을 수 없습니다. ID=" + segmentID));
+                .orElseThrow(() -> new ResourceNotFoundException("세그먼트를 찾을 수 없습니다. ID=" + segmentID));
 
         if (request.getSequenceNumber() != null)
             seg.setSequenceNumber(request.getSequenceNumber());
@@ -172,7 +192,7 @@ public class SegmentService {
         if (request.getDuration() != null)
             seg.setDuration(request.getDuration());
 
-        segmentRepository.save(seg); // 변경 사항 저장
+        segmentRepository.save(seg);
         return toDTO(seg);
     }
 

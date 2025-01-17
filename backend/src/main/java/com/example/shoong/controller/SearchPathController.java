@@ -71,18 +71,23 @@ public class SearchPathController {
 
     // 경로 데이터 추출
     Map<String, Object> routeData = (Map<String, Object>) jsonMap.get("route");
+    System.out.println("routeData");
     List<Object> traoptimal = (List<Object>) routeData.get("traoptimal");
+    System.out.println("traoptimal");
     Map<String, Object> route = (Map<String, Object>) traoptimal.get(0);
+    System.out.println("route");
     List<Map<String, Object>> guides = (List<Map<String, Object>>) route.get("guide");
+    System.out.println("guides");
     List<List<Double>> paths = (List<List<Double>>) route.get("path");
+    System.out.println("paths");
 
     // Path 엔티티 생성
     Path path = new Path();
     path.setPathID(UUID.randomUUID().toString());
-
+    System.out.println("pathID");
     // Segment 데이터 저장
     segmentService.saveSegments(path, guides, paths);
-
+    System.out.println("saveSegments");
     return ResponseEntity.ok("Segment 저장 완료");
   }
 }
