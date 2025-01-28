@@ -30,7 +30,7 @@ Shoong과 함께 스트레스 없는 주행, 연비 절약, 부드러운 운전�
 
 |                                                      👩🏻‍💻 이한샘                                                       |                                                      🥔 허지민                                                       |
 | :------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------: |
-| <img src="https://github.com/user-attachments/assets/bb17ef51-ebab-4d13-ad63-1e4bd8fd25ad" alt="이한샘" width="150"> | <img src="" alt="허지민" width="150"> |
+| <img src="https://github.com/user-attachments/assets/bb17ef51-ebab-4d13-ad63-1e4bd8fd25ad" alt="이한샘" width="150"> | <img src="https://github.com/user-attachments/assets/056e57c1-345d-42a8-9761-9c3a6a722bde" alt="허지민" width="150"> |
 |                                                   기획 / 백엔드 개발자                                                   |                                                 기획 / 프론트엔드 개발자                                                 |
 |                                                     KAIST AE/CS                                                      |                                                    KAIST CS/BBE                                                    |
 |                                                ihansaem1@kaist.ac.kr                                                 |                                                 zimin322@kaist.ac.kr                                                 |
@@ -97,3 +97,5 @@ Shoong과 함께 스트레스 없는 주행, 연비 절약, 부드러운 운전�
 챙겨준 지민이에게 다시 한번 감사의 말씀을 전합니다.
 
 ### 허지민
+
+한샘이랑 같이 할 수 있어서 좋았다~~~
