@@ -69,7 +69,7 @@ Shoong과 함께 스트레스 없는 주행, 연비 절약, 부드러운 운전�
 
 
 
-## 3. 출발지, 도착지 입력 화면 <img src="https://github.com/user-attachments/assets/24767e94-ec96-4a89-a709-ae0cbc07adc4" alt="입력" width="300" align="right"> <img src="https://github.com/user-attachments/assets/1d079fa7-a6cc-4fbf-86a7-1a46a0fa212f" alt="길찾기" width="300" align="right">
+## 3. 출발지, 도착지 입력 화면 <img src="https://github.com/user-attachments/assets/24767e94-ec96-4a89-a709-ae0cbc07adc4" alt="입력" width="250" align="right"> <img src="https://github.com/user-attachments/assets/1d079fa7-a6cc-4fbf-86a7-1a46a0fa212f" alt="길찾기" width="250" align="right">
 - 출발지/도착지 입력
   - 즐겨찾는 장소 / 최근 내역에서 선택 ⇒ 도착지로 설정됨
   - 검색 ⇒ 원하는 장소 선택
